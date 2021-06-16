@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <SignAssembly>false</SignAssembly>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <Authors>Dorin Mocan</Authors>
+    <Company></Company>
+    <Description>This package can be used to generate Swagger documentation for SignalR hubs.</Description>
+    <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api</PackageTags>
+    <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.4" />
+  </ItemGroup>
+
+</Project>
