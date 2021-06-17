@@ -10,8 +10,16 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>1.0.3</Version>
+    <Version>1.0.4</Version>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>C:\Projects\SignalRSwaggerGen\SignalRSwaggerGen\SignalRSwaggerGen\SignalRSwaggerGen.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.1.4" />

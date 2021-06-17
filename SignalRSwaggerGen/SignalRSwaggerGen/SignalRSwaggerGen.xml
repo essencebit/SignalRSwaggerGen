@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SignalRSwaggerGen</name>
+    </assembly>
+    <members>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRArgAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for method args
+            </summary>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRHubAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for hubs
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String)">
+            <param name="path">Relative path of the hub</param>
+            <exception cref="T:System.ArgumentException">Thrown if path is null or empty</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for hub methods
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType)">
+            <param name="name">Name of the method which will be invoked on the client side.
+            If "[Method]" is specified, the name of the method holding this attribute will be used.</param>
+            <param name="operationType">Same as HTTP verb</param>
+            <exception cref="T:System.ArgumentException">Thrown if name is null or empty</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.SignalRSwaggerGen">
+            <summary>
+            This class can be used by Swagger to generate documentation for SignalR hubs.
+            In order for Swagger to use this class, just add this class as document filter for Swagger generator.
+            Don't forget to add assemblies which contain SignalR hubs as parameters for document filter.
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <param name="assemblies">Assemblies which contain SignalR hubs</param>
+            <exception cref="T:System.ArgumentException">Thrown if no assemblies provided</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+            <summary>
+            This method is automatically called by Swagger generator
+            </summary>
+            <param name="swaggerDoc"></param>
+            <param name="context"></param>
+        </member>
+    </members>
+</doc>
