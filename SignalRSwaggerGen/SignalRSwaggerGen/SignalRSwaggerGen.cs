@@ -56,14 +56,10 @@ namespace SignalRSwaggerGen
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
 			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
 			var methodArgs = method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
-			foreach (var arg in methodArgs)
-			{
-				GenerateOpenApiSchemaForType(context, arg.ParameterType);
-			}
-			AddOpenApiPath(swaggerDoc, tag, methodPath, methodAttribute.OperationType, methodArgs);
+			AddOpenApiPath(swaggerDoc, context, tag, methodPath, methodAttribute.OperationType, methodArgs);
 		}
 
-		private static void AddOpenApiPath(OpenApiDocument swaggerDoc, string tag, string methodPath, OperationType operationType, IEnumerable<ParameterInfo> methodArgs)
+		private static void AddOpenApiPath(OpenApiDocument swaggerDoc, DocumentFilterContext context, string tag, string methodPath, OperationType operationType, IEnumerable<ParameterInfo> methodArgs)
 		{
 			swaggerDoc.Paths.Add(
 				methodPath,
@@ -76,34 +72,37 @@ namespace SignalRSwaggerGen
 							new OpenApiOperation
 							{
 								Tags = new List<OpenApiTag> { new OpenApiTag { Name = tag } },
-								Parameters = ToOpenApiParameters(methodArgs).ToList()
+								Parameters = ToOpenApiParameters(context, methodArgs).ToList()
 							}
 						}
 					}
 				});
 		}
 
-		private static void GenerateOpenApiSchemaForType(DocumentFilterContext context, Type type)
+		private static IEnumerable<OpenApiParameter> ToOpenApiParameters(DocumentFilterContext context, IEnumerable<ParameterInfo> args)
 		{
-			if (context.SchemaRepository.TryLookupByType(type, out OpenApiSchema _)) return;
-			context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+			return args.Select(x =>
+			{
+				var param = new OpenApiParameter { Name = x.Name, In = ParameterLocation.Query };
+				var schema = GetOpenApiSchema(context, x.ParameterType);
+				param.Schema = schema.Reference == null
+					? schema
+					: new OpenApiSchema
+					{
+						Reference = new OpenApiReference
+						{
+							Id = schema.Reference.Id,
+							Type = ReferenceType.Schema
+						}
+					};
+				return param;
+			});
 		}
 
-		private static IEnumerable<OpenApiParameter> ToOpenApiParameters(IEnumerable<ParameterInfo> args)
+		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
 		{
-			return args.Select(x => new OpenApiParameter
-			{
-				Name = x.Name,
-				In = ParameterLocation.Query,
-				Schema = new OpenApiSchema
-				{
-					Reference = new OpenApiReference
-					{
-						Id = GetSchemaId(x.ParameterType),
-						Type = ReferenceType.Schema
-					}
-				}
-			});
+			if (context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema)) return schema;
+			return context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
 		}
 
 		private static string GetHubPath(Type hub, SignalRHubAttribute hubAttribute)
@@ -118,12 +117,7 @@ namespace SignalRSwaggerGen
 
 		private static string GetTag(Type hub)
 		{
-			return $"{hub.Name}(SignalR)";
-		}
-
-		private static string GetSchemaId(Type type)
-		{
-			return type.Name;
+			return hub.Name;
 		}
 	}
 }
