@@ -10,8 +10,8 @@ namespace SignalRSwaggerGen.Attributes
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
 	public sealed class SignalRMethodAttribute : Attribute
 	{
-		internal string Name { get; }
-		internal OperationType OperationType { get; }
+		public string Name { get; }
+		public OperationType OperationType { get; }
 
 		/// <param name="name">Name of the method which will be invoked on the client side.
 		/// If "[Method]" is specified, the name of the method holding this attribute will be used.</param>
