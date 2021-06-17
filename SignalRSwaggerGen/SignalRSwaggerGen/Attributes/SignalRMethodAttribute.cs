@@ -17,7 +17,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// If "[Method]" is specified, the name of the method holding this attribute will be used.</param>
 		/// <param name="operationType">Same as HTTP verb</param>
 		/// <exception cref="ArgumentException">Thrown if name is null or empty</exception>
-		public SignalRMethodAttribute(string name = Constants.MethodNamePlaceholder, OperationType operationType = OperationType.Post)
+		public SignalRMethodAttribute(string name = Constants.MethodNamePlaceholder, OperationType operationType = Constants.DefaultOperationType)
 		{
 			if (name.IsNullOrEmpty()) throw new ArgumentException("Name is null or empty", nameof(name));
 			Name = name;
