@@ -21,7 +21,7 @@ namespace SignalRSwaggerGen
 		/// <exception cref="ArgumentException">Thrown if no assemblies provided</exception>
 		public SignalRSwaggerGen(IEnumerable<Assembly> assemblies)
 		{
-			if (assemblies == null || assemblies.Count() == 0) throw new ArgumentException("No assemblies provided", nameof(assemblies));
+			if (assemblies == null || !assemblies.Any()) throw new ArgumentException("No assemblies provided", nameof(assemblies));
 			Assemblies = assemblies;
 		}
 
@@ -39,7 +39,7 @@ namespace SignalRSwaggerGen
 			}
 		}
 
-		private void ProcessHub(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hub)
+		private static void ProcessHub(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hub)
 		{
 			var hubAttribute = hub.GetCustomAttribute<SignalRHubAttribute>();
 			var hubPath = GetHubPath(hub, hubAttribute);
@@ -51,7 +51,7 @@ namespace SignalRSwaggerGen
 			}
 		}
 
-		private void ProcessMethod(OpenApiDocument swaggerDoc, DocumentFilterContext context, string hubPath, string tag, MethodInfo method)
+		private static void ProcessMethod(OpenApiDocument swaggerDoc, DocumentFilterContext context, string hubPath, string tag, MethodInfo method)
 		{
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
 			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
@@ -63,7 +63,7 @@ namespace SignalRSwaggerGen
 			AddOpenApiPath(swaggerDoc, tag, methodPath, methodAttribute.OperationType, methodArgs);
 		}
 
-		private void AddOpenApiPath(OpenApiDocument swaggerDoc, string tag, string methodPath, OperationType operationType, IEnumerable<ParameterInfo> methodArgs)
+		private static void AddOpenApiPath(OpenApiDocument swaggerDoc, string tag, string methodPath, OperationType operationType, IEnumerable<ParameterInfo> methodArgs)
 		{
 			swaggerDoc.Paths.Add(
 				methodPath,
@@ -83,7 +83,7 @@ namespace SignalRSwaggerGen
 				});
 		}
 
-		private void GenerateOpenApiSchemaForType(DocumentFilterContext context, Type type)
+		private static void GenerateOpenApiSchemaForType(DocumentFilterContext context, Type type)
 		{
 			if (context.SchemaRepository.TryLookupByType(type, out OpenApiSchema _)) return;
 			context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
