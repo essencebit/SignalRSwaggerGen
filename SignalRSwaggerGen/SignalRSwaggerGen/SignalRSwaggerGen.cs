@@ -1,5 +1,7 @@
 ﻿using Microsoft.OpenApi.Models;
 using SignalRSwaggerGen.Attributes;
+using SignalRSwaggerGen.Enums;
+using SignalRSwaggerGen.Utils;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
@@ -19,7 +21,7 @@ namespace SignalRSwaggerGen
 
 		/// <param name="assemblies">Assemblies which contain SignalR hubs</param>
 		/// <exception cref="ArgumentException">Thrown if no assemblies provided</exception>
-		public SignalRSwaggerGen(IEnumerable<Assembly> assemblies)
+		public SignalRSwaggerGen(List<Assembly> assemblies)
 		{
 			if (assemblies == null || !assemblies.Any()) throw new ArgumentException("No assemblies provided", nameof(assemblies));
 			Assemblies = assemblies;
@@ -44,19 +46,20 @@ namespace SignalRSwaggerGen
 			var hubAttribute = hub.GetCustomAttribute<SignalRHubAttribute>();
 			var hubPath = GetHubPath(hub, hubAttribute);
 			var tag = GetTag(hub);
-			var methods = hub.GetMethods().Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
+			var methods = GetHubMethods(hub, hubAttribute);
 			foreach (var method in methods)
 			{
-				ProcessMethod(swaggerDoc, context, hubPath, tag, method);
+				ProcessMethod(swaggerDoc, context, hubAttribute, hubPath, tag, method);
 			}
 		}
 
-		private static void ProcessMethod(OpenApiDocument swaggerDoc, DocumentFilterContext context, string hubPath, string tag, MethodInfo method)
+		private static void ProcessMethod(OpenApiDocument swaggerDoc, DocumentFilterContext context, SignalRHubAttribute hubAttribute, string hubPath, string tag, MethodInfo method)
 		{
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
 			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
-			var methodArgs = method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
-			AddOpenApiPath(swaggerDoc, context, tag, methodPath, methodAttribute.OperationType, methodArgs);
+			var methodArgs = GetMethodArgs(method, hubAttribute, methodAttribute);
+			var operationType = methodAttribute?.OperationType ?? Constants.DefaultOperationType;
+			AddOpenApiPath(swaggerDoc, context, tag, methodPath, operationType, methodArgs);
 		}
 
 		private static void AddOpenApiPath(OpenApiDocument swaggerDoc, DocumentFilterContext context, string tag, string methodPath, OperationType operationType, IEnumerable<ParameterInfo> methodArgs)
@@ -83,7 +86,11 @@ namespace SignalRSwaggerGen
 		{
 			return args.Select(x =>
 			{
-				var param = new OpenApiParameter { Name = x.Name, In = ParameterLocation.Query };
+				var param = new OpenApiParameter
+				{
+					Name = x.Name,
+					In = ParameterLocation.Query
+				};
 				var schema = GetOpenApiSchema(context, x.ParameterType);
 				param.Schema = schema.Reference == null
 					? schema
@@ -107,17 +114,68 @@ namespace SignalRSwaggerGen
 
 		private static string GetHubPath(Type hub, SignalRHubAttribute hubAttribute)
 		{
-			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, hub.Name);
+			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, GetTypeName(hub));
 		}
 
 		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRMethodAttribute methodAttribute)
 		{
-			return $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}";
+			return methodAttribute == null
+				? $"{hubPath}/{method.Name}"
+				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}";
 		}
 
 		private static string GetTag(Type hub)
 		{
-			return hub.Name;
+			return GetTypeName(hub);
+		}
+
+		private static IEnumerable<MethodInfo> GetHubMethods(Type hub, SignalRHubAttribute hubAttribute)
+		{
+			switch (hubAttribute.AutoDiscover)
+			{
+				case AutoDiscover.None:
+					return hub.GetMethods(ReflectionUtils.PublicInstance).Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
+				case AutoDiscover.Methods:
+				case AutoDiscover.MethodsAndArgs:
+					return hub.GetMethods(ReflectionUtils.PublicInstance);
+				default:
+					throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
+			}
+		}
+
+		private static IEnumerable<ParameterInfo> GetMethodArgs(MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
+		{
+			if (methodAttribute == null)
+			{
+				switch (hubAttribute.AutoDiscover)
+				{
+					case AutoDiscover.None:
+					case AutoDiscover.Methods:
+						return method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+					case AutoDiscover.MethodsAndArgs:
+						return method.GetParameters();
+					default:
+						throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
+				}
+			}
+			else
+			{
+				switch (methodAttribute.AutoDiscover)
+				{
+					case AutoDiscover.None:
+						return method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+					case AutoDiscover.Args:
+						return method.GetParameters();
+					default:
+						throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
+				}
+			}
+		}
+
+		private static string GetTypeName(Type type)
+		{
+			if (type.IsInterface && type.Name[0] == 'I') return type.Name[1..];
+			return type.Name;
 		}
 	}
 }

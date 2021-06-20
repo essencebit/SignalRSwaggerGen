@@ -14,8 +14,10 @@
             Use this attribute to enable Swagger documentation for hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String)">
-            <param name="path">Relative path of the hub</param>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover)">
+            <param name="path">Relative path of the hub.
+            If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute.</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
             <exception cref="T:System.ArgumentException">Thrown if path is null or empty</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
@@ -23,11 +25,32 @@
             Use this attribute to enable Swagger documentation for hub methods
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType,SignalRSwaggerGen.Enums.AutoDiscover)">
             <param name="name">Name of the method which will be invoked on the client side.
-            If "[Method]" is specified, the name of the method holding this attribute will be used.</param>
+            If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
             <param name="operationType">Same as HTTP verb</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
             <exception cref="T:System.ArgumentException">Thrown if name is null or empty</exception>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.None">
+            <summary>
+            None
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Methods">
+            <summary>
+            Public non-static methods
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Args">
+            <summary>
+            Public non-static method args
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.MethodsAndArgs">
+            <summary>
+            Public non-static methods and their args
+            </summary>
         </member>
         <member name="T:SignalRSwaggerGen.SignalRSwaggerGen">
             <summary>
@@ -36,7 +59,7 @@
             Don't forget to add assemblies which contain SignalR hubs as parameters for document filter.
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.#ctor(System.Collections.Generic.List{System.Reflection.Assembly})">
             <param name="assemblies">Assemblies which contain SignalR hubs</param>
             <exception cref="T:System.ArgumentException">Thrown if no assemblies provided</exception>
         </member>
