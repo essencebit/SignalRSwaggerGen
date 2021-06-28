@@ -24,7 +24,7 @@ namespace SignalRSwaggerGen
 		public SignalRSwaggerGen(List<Assembly> assemblies)
 		{
 			if (assemblies == null || !assemblies.Any()) throw new ArgumentException("No assemblies provided", nameof(assemblies));
-			Assemblies = assemblies;
+			Assemblies = assemblies.Distinct();
 		}
 
 		/// <summary>

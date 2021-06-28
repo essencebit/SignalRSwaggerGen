@@ -10,13 +10,9 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>2.0.3</Version>
-    <PackageReleaseNotes>1. Added auto-discover for methods and method args
-2. Added restriction for methods(only public non-static supported)
-3. Documentation enrichment
-4. Made attributes non-inheritable
-5. Trim leading "I" from interface name</PackageReleaseNotes>
-    <AssemblyVersion>2.0.3.0</AssemblyVersion>
+    <Version>2.0.4</Version>
+    <PackageReleaseNotes>1. Avoid crashing when the list of assemblies passed as param for document filter contains duplicate assemblies</PackageReleaseNotes>
+    <AssemblyVersion>2.0.4.0</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
