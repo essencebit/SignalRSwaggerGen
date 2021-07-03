@@ -9,6 +9,11 @@
             Use this attribute to enable Swagger documentation for method args
             </summary>
         </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRHiddenAttribute">
+            <summary>
+            Use this attribute to disable Swagger documentation for specific components
+            </summary>
+        </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRHubAttribute">
             <summary>
             Use this attribute to enable Swagger documentation for hubs
@@ -32,6 +37,11 @@
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
             <exception cref="T:System.ArgumentException">Thrown if name is null or empty</exception>
         </member>
+        <member name="T:SignalRSwaggerGen.Enums.AutoDiscover">
+            <summary>
+            A flag indicating what components will have Swagger documentation enabled automatically
+            </summary>
+        </member>
         <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.None">
             <summary>
             None
@@ -44,7 +54,7 @@
         </member>
         <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Args">
             <summary>
-            Public non-static method args
+            Method args
             </summary>
         </member>
         <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.MethodsAndArgs">
@@ -56,7 +66,7 @@
             <summary>
             This class can be used by Swagger to generate documentation for SignalR hubs.
             In order for Swagger to use this class, just add this class as document filter for Swagger generator.
-            Don't forget to add assemblies which contain SignalR hubs as parameters for document filter.
+            Don't forget to add the list of assemblies which contain SignalR hubs as parameter for document filter.
             </summary>
         </member>
         <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.#ctor(System.Collections.Generic.List{System.Reflection.Assembly})">

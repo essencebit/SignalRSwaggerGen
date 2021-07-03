@@ -1,5 +1,8 @@
 ﻿namespace SignalRSwaggerGen.Enums
 {
+	/// <summary>
+	/// A flag indicating what components will have Swagger documentation enabled automatically
+	/// </summary>
 	public enum AutoDiscover
 	{
 		/// <summary>
@@ -13,7 +16,7 @@
 		Methods,
 
 		/// <summary>
-		/// Public non-static method args
+		/// Method args
 		/// </summary>
 		Args,
 

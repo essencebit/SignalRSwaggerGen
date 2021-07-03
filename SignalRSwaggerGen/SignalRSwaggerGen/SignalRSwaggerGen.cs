@@ -13,7 +13,7 @@ namespace SignalRSwaggerGen
 	/// <summary>
 	/// This class can be used by Swagger to generate documentation for SignalR hubs.
 	/// In order for Swagger to use this class, just add this class as document filter for Swagger generator.
-	/// Don't forget to add assemblies which contain SignalR hubs as parameters for document filter.
+	/// Don't forget to add the list of assemblies which contain SignalR hubs as parameter for document filter.
 	/// </summary>
 	public sealed class SignalRSwaggerGen : IDocumentFilter
 	{
@@ -34,7 +34,7 @@ namespace SignalRSwaggerGen
 		/// <param name="context"></param>
 		public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
 		{
-			var hubs = Assemblies.SelectMany(x => x.GetTypes().Where(x => x.GetCustomAttribute<SignalRHubAttribute>() != null));
+			var hubs = GetHubs();
 			foreach (var hub in hubs)
 			{
 				ProcessHub(swaggerDoc, context, hub);
@@ -129,31 +129,48 @@ namespace SignalRSwaggerGen
 			return GetTypeName(hub);
 		}
 
+		private IEnumerable<Type> GetHubs()
+		{
+			return Assemblies
+				.SelectMany(x =>
+					x.GetTypes()
+					.Where(x =>
+						x.GetCustomAttribute<SignalRHubAttribute>() != null
+						&& x.GetCustomAttribute<SignalRHiddenAttribute>() == null));
+		}
+
 		private static IEnumerable<MethodInfo> GetHubMethods(Type hub, SignalRHubAttribute hubAttribute)
 		{
+			IEnumerable<MethodInfo> methods;
 			switch (hubAttribute.AutoDiscover)
 			{
 				case AutoDiscover.None:
-					return hub.GetMethods(ReflectionUtils.PublicInstance).Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
+					methods = hub.GetMethods(ReflectionUtils.PublicInstance).Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
+					break;
 				case AutoDiscover.Methods:
 				case AutoDiscover.MethodsAndArgs:
-					return hub.GetMethods(ReflectionUtils.PublicInstance);
+					methods = hub.GetMethods(ReflectionUtils.PublicInstance);
+					break;
 				default:
 					throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
 			}
+			return methods.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
 		}
 
 		private static IEnumerable<ParameterInfo> GetMethodArgs(MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
 		{
+			IEnumerable<ParameterInfo> methodArgs;
 			if (methodAttribute == null)
 			{
 				switch (hubAttribute.AutoDiscover)
 				{
 					case AutoDiscover.None:
 					case AutoDiscover.Methods:
-						return method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+						methodArgs = method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+						break;
 					case AutoDiscover.MethodsAndArgs:
-						return method.GetParameters();
+						methodArgs = method.GetParameters();
+						break;
 					default:
 						throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
 				}
@@ -163,13 +180,16 @@ namespace SignalRSwaggerGen
 				switch (methodAttribute.AutoDiscover)
 				{
 					case AutoDiscover.None:
-						return method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+						methodArgs = method.GetParameters().Where(x => x.GetCustomAttribute<SignalRArgAttribute>() != null);
+						break;
 					case AutoDiscover.Args:
-						return method.GetParameters();
+						methodArgs = method.GetParameters();
+						break;
 					default:
 						throw new NotSupportedException($"Value {hubAttribute.AutoDiscover} not supported");
 				}
 			}
+			return methodArgs.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
 		}
 
 		private static string GetTypeName(Type type)
