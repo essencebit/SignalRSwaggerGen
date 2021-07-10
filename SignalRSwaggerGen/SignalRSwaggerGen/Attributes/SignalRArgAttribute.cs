@@ -8,5 +8,12 @@ namespace SignalRSwaggerGen.Attributes
 	[AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false, Inherited = false)]
 	public sealed class SignalRArgAttribute : Attribute
 	{
+		public string Description { get; }
+
+		/// <param name="description">The text that will appear in description section of decorated argument in Swagger document</param>
+		public SignalRArgAttribute(string description = null)
+		{
+			Description = description;
+		}
 	}
 }

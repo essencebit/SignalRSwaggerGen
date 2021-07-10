@@ -9,6 +9,9 @@
             Use this attribute to enable Swagger documentation for method args
             </summary>
         </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRArgAttribute.#ctor(System.String)">
+            <param name="description">The text that will appear in description section of decorated argument in Swagger document</param>
+        </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRHiddenAttribute">
             <summary>
             Use this attribute to disable Swagger documentation for specific components
@@ -19,10 +22,11 @@
             Use this attribute to enable Swagger documentation for hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[])">
             <param name="path">Relative path of the hub.
             If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
+            <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in. If null or empty array specified, then the hub will be displayed in all documents.</param>
             <exception cref="T:System.ArgumentException">Thrown if path is null or empty</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
@@ -30,11 +34,13 @@
             Use this attribute to enable Swagger documentation for hub methods
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType,SignalRSwaggerGen.Enums.AutoDiscover)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String)">
             <param name="name">Name of the method which will be invoked on the client side.
             If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
             <param name="operationType">Same as HTTP verb</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
+            <param name="summary">The text that will appear in summary section of decorated method in Swagger document</param>
+            <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
             <exception cref="T:System.ArgumentException">Thrown if name is null or empty</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Enums.AutoDiscover">

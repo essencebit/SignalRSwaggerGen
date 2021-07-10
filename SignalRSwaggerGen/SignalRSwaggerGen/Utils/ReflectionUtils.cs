@@ -4,6 +4,6 @@ namespace SignalRSwaggerGen.Utils
 {
 	public class ReflectionUtils
 	{
-		public const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
+		public const BindingFlags DeclaredPublicInstance = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
 	}
 }

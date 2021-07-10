@@ -7,12 +7,16 @@
     <Authors>Dorin Mocan</Authors>
     <Company></Company>
     <Description>This package can be used to generate Swagger documentation for SignalR hubs.</Description>
-    <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto</PackageTags>
+    <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>2.0.5</Version>
-    <PackageReleaseNotes>1. Added SignalRHiddenAttribute attribute for disabling Swagger documentation for specific components(hubs/methods/args)</PackageReleaseNotes>
-    <AssemblyVersion>2.0.5.0</AssemblyVersion>
+    <Version>2.1.1</Version>
+    <PackageReleaseNotes>1. Added support for multiple Swagger documents('documentNames' parameter in SignalRHubAttribute)
+2. Added summary and description for methods('summary' and 'description' parameters in SignalRMethodAttribute)
+3. Added description for method args('description' parameter in SignalRArgAttribute)
+4. (BugFix) When AutoDiscover.Methods or AutoDiscover.MethodsAndArgs option enabled for hubs, do not take into account methods inherited from base class(consider only those declared in the hub)</PackageReleaseNotes>
+    <AssemblyVersion>2.1.1.0</AssemblyVersion>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
