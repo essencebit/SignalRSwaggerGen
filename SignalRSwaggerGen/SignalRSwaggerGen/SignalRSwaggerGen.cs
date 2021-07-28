@@ -2,11 +2,13 @@
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Utils;
+using SignalRSwaggerGen.Utils.Comparison;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace SignalRSwaggerGen
 {
@@ -65,10 +67,11 @@ namespace SignalRSwaggerGen
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
 			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
 			var methodArgs = GetMethodArgs(method, hubAttribute, methodAttribute);
+			var methodReturnArg = method.ReturnParameter;
 			var operationType = methodAttribute?.OperationType ?? Constants.DefaultOperationType;
 			var summary = methodAttribute?.Summary;
 			var description = methodAttribute?.Description;
-			AddOpenApiPath(swaggerDoc, context, tag, methodPath, operationType, summary, description, methodArgs);
+			AddOpenApiPath(swaggerDoc, context, tag, methodPath, operationType, summary, description, methodArgs, methodReturnArg);
 		}
 
 		private static void AddOpenApiPath(
@@ -79,7 +82,8 @@ namespace SignalRSwaggerGen
 			OperationType operationType,
 			string summary,
 			string description,
-			IEnumerable<ParameterInfo> methodArgs)
+			IEnumerable<ParameterInfo> methodArgs,
+			ParameterInfo methodReturnArg)
 		{
 			swaggerDoc.Paths.Add(
 				methodPath,
@@ -94,7 +98,8 @@ namespace SignalRSwaggerGen
 								Summary = summary,
 								Description = description,
 								Tags = new List<OpenApiTag> { new OpenApiTag { Name = tag } },
-								Parameters = ToOpenApiParameters(context, methodArgs).ToList()
+								Parameters = ToOpenApiParameters(context, methodArgs).ToList(),
+								Responses = ToOpenApiResponses(context, methodReturnArg)
 							}
 						}
 					}
@@ -126,6 +131,44 @@ namespace SignalRSwaggerGen
 					};
 				return param;
 			});
+		}
+
+		private static OpenApiResponses ToOpenApiResponses(DocumentFilterContext context, ParameterInfo returnArg)
+		{
+			if (returnArg.GetCustomAttribute<SignalRHiddenAttribute>() != null) return null;
+			var responses = new OpenApiResponses();
+			var returnAttributes = returnArg.GetCustomAttributes<SignalRReturnAttribute>().Distinct(new SignalRReturnAttributeComparer()).ToList();
+			if (!returnAttributes.Any()) returnAttributes.Add(new SignalRReturnAttribute());
+			foreach (var returnAttribute in returnAttributes)
+			{
+				var type = returnAttribute.ReturnType ?? returnArg.ParameterType;
+				if (!TryGetReturnType(type, out type)) continue;
+				var schema = GetOpenApiSchema(context, type);
+				var mediaType = new OpenApiMediaType
+				{
+					Schema = schema.Reference == null
+						? schema
+						: new OpenApiSchema
+						{
+							Reference = new OpenApiReference
+							{
+								Id = schema.Reference.Id,
+								Type = ReferenceType.Schema
+							}
+						}
+				};
+				responses.Add(returnAttribute.StatusCode.ToString(), new OpenApiResponse
+				{
+					Description = returnAttribute.Description,
+					Content = new Dictionary<string, OpenApiMediaType>
+					{
+						{ "application/json", mediaType },
+						{ "text/json", mediaType },
+						{ "text/plain", mediaType }
+					}
+				});
+			}
+			return responses;
 		}
 
 		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
@@ -225,6 +268,28 @@ namespace SignalRSwaggerGen
 		{
 			if (type.IsInterface && type.Name[0] == 'I') return type.Name[1..];
 			return type.Name;
+		}
+
+		private static bool TryGetReturnType(Type inType, out Type outType)
+		{
+			outType = inType;
+			if (inType.IsGenericType)
+			{
+				if (inType.IsGenericTypeDefinition) return false;
+				var genericTypeDef = inType.GetGenericTypeDefinition();
+				if (genericTypeDef == typeof(Task<>) || genericTypeDef == typeof(ValueTask<>))
+				{
+					outType = inType.GetGenericArguments()[0];
+					return true;
+				}
+			}
+			else
+			{
+				if (inType == typeof(void)) return false;
+				if (inType == typeof(Task)) return false;
+				if (inType == typeof(ValueTask)) return false;
+			}
+			return true;
 		}
 	}
 }

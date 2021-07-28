@@ -43,6 +43,16 @@
             <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
             <exception cref="T:System.ArgumentException">Thrown if name is null or empty</exception>
         </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for method return type
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRReturnAttribute.#ctor(System.Type,System.Int32,System.String)">
+            <param name="returnType">Return type. If null specified, the return type of the method will be picked up.</param>
+            <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger document</param>
+            <param name="description">The text that will appear in description section of the corresponding response in Swagger document</param>
+        </member>
         <member name="T:SignalRSwaggerGen.Enums.AutoDiscover">
             <summary>
             A flag indicating what components will have Swagger documentation enabled automatically

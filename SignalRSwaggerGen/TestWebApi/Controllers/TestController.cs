@@ -15,6 +15,8 @@ namespace TestWebApi.Controllers
 			"Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
 		};
 
+		[ProducesResponseType(typeof(int), 200)]
+		[ProducesResponseType(typeof(string), 400)]
 		[HttpGet]
 		public IEnumerable<WeatherForecast> Get()
 		{
@@ -26,6 +28,13 @@ namespace TestWebApi.Controllers
 				Summary = Summaries[rng.Next(Summaries.Length)]
 			})
 			.ToArray();
+		}
+
+		[HttpPost]
+		public int Post()
+		{
+			var rng = new Random();
+			return rng.Next();
 		}
 	}
 }
