@@ -40,5 +40,11 @@ namespace TestWebApi.Hubs
 		{
 			return default;
 		}
+
+		[return: SignalRHidden]
+		public Task<WeatherForecast> TestMethod3()
+		{
+			return default;
+		}
 	}
 }

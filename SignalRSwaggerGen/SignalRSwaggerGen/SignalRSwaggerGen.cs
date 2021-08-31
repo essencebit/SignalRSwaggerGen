@@ -191,9 +191,10 @@ namespace SignalRSwaggerGen
 
 		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRMethodAttribute methodAttribute)
 		{
+			var methodPathSuffix = new string(' ', method.GetParameters().Length);
 			return methodAttribute == null
-				? $"{hubPath}/{method.Name}"
-				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}";
+				? $"{hubPath}/{method.Name}{methodPathSuffix}"
+				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}{methodPathSuffix}";
 		}
 
 		private static string GetTag(Type hub)
