@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Models;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Utils;
 using System;
@@ -25,7 +25,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
 		/// <param name="summary">The text that will appear in summary section of decorated method in Swagger document</param>
 		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
-		/// <exception cref="ArgumentException">Thrown if name is null or empty</exception>
+		/// <exception cref="ArgumentException">Thrown if name is null or empty, or auto-discover value not allowed for this attribute</exception>
 		public SignalRMethodAttribute(
 			string name = Constants.MethodNamePlaceholder,
 			OperationType operationType = Constants.DefaultOperationType,
@@ -34,7 +34,7 @@ namespace SignalRSwaggerGen.Attributes
 			string description = null)
 		{
 			if (name.IsNullOrEmpty()) throw new ArgumentException("Name is null or empty", nameof(name));
-			if (!ValidAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
+			if (!_validAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
 			Name = name;
 			OperationType = operationType;
 			AutoDiscover = autoDiscover;
@@ -42,7 +42,7 @@ namespace SignalRSwaggerGen.Attributes
 			Description = description;
 		}
 
-		private static IEnumerable<AutoDiscover> ValidAutoDiscoverValues { get; } = new List<AutoDiscover>
+		private static readonly IEnumerable<AutoDiscover> _validAutoDiscoverValues = new List<AutoDiscover>
 		{
 			AutoDiscover.None,
 			AutoDiscover.Args

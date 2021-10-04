@@ -1,4 +1,4 @@
-﻿namespace SignalRSwaggerGen.Enums
+namespace SignalRSwaggerGen.Enums
 {
 	/// <summary>
 	/// A flag indicating what components will have Swagger documentation enabled automatically

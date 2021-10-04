@@ -15,18 +15,19 @@ namespace SignalRSwaggerGen
 	/// <summary>
 	/// This class can be used by Swagger to generate documentation for SignalR hubs.
 	/// In order for Swagger to use this class, just add this class as document filter for Swagger generator.
-	/// Don't forget to add the list of assemblies which contain SignalR hubs as parameter for document filter.
+	/// Don't forget to add the list of assemblies which contain SignalR hubs as parameter for this document filter.
 	/// </summary>
 	public sealed class SignalRSwaggerGen : IDocumentFilter
 	{
-		private IEnumerable<Assembly> Assemblies { get; }
+		private readonly IEnumerable<Assembly> _assemblies;
+		private static readonly SignalRReturnAttributeComparer _returnAttributeComparer = new SignalRReturnAttributeComparer();
 
 		/// <param name="assemblies">Assemblies which contain SignalR hubs</param>
 		/// <exception cref="ArgumentException">Thrown if no assemblies provided</exception>
 		public SignalRSwaggerGen(List<Assembly> assemblies)
 		{
 			if (assemblies == null || !assemblies.Any()) throw new ArgumentException("No assemblies provided", nameof(assemblies));
-			Assemblies = assemblies.Distinct();
+			_assemblies = assemblies.Distinct();
 		}
 
 		/// <summary>
@@ -71,7 +72,7 @@ namespace SignalRSwaggerGen
 			var operationType = methodAttribute?.OperationType ?? Constants.DefaultOperationType;
 			var summary = methodAttribute?.Summary;
 			var description = methodAttribute?.Description;
-			AddOpenApiPath(swaggerDoc, context, tag, methodPath, operationType, summary, description, methodArgs, methodReturnArg);
+			AddOpenApiPath(swaggerDoc, context, tag, methodPath, operationType, summary, description, methodArgs, methodReturnArg, method);
 		}
 
 		private static void AddOpenApiPath(
@@ -83,7 +84,8 @@ namespace SignalRSwaggerGen
 			string summary,
 			string description,
 			IEnumerable<ParameterInfo> methodArgs,
-			ParameterInfo methodReturnArg)
+			ParameterInfo methodReturnArg,
+			MethodInfo method)
 		{
 			swaggerDoc.Paths.Add(
 				methodPath,
@@ -99,7 +101,8 @@ namespace SignalRSwaggerGen
 								Description = description,
 								Tags = new List<OpenApiTag> { new OpenApiTag { Name = tag } },
 								Parameters = ToOpenApiParameters(context, methodArgs).ToList(),
-								Responses = ToOpenApiResponses(context, methodReturnArg)
+								Responses = ToOpenApiResponses(context, methodReturnArg),
+								RequestBody =  GetOpenApiRequestBody(context, method),
 							}
 						}
 					}
@@ -118,17 +121,7 @@ namespace SignalRSwaggerGen
 					In = ParameterLocation.Query,
 					Description = description
 				};
-				var schema = GetOpenApiSchema(context, arg.ParameterType);
-				param.Schema = schema.Reference == null
-					? schema
-					: new OpenApiSchema
-					{
-						Reference = new OpenApiReference
-						{
-							Id = schema.Reference.Id,
-							Type = ReferenceType.Schema
-						}
-					};
+				param.Schema = GetOpenApiSchema(context, arg.ParameterType);
 				return param;
 			});
 		}
@@ -137,44 +130,67 @@ namespace SignalRSwaggerGen
 		{
 			if (returnArg.GetCustomAttribute<SignalRHiddenAttribute>() != null) return null;
 			var responses = new OpenApiResponses();
-			var returnAttributes = returnArg.GetCustomAttributes<SignalRReturnAttribute>().Distinct(new SignalRReturnAttributeComparer()).ToList();
+			var returnAttributes = returnArg.GetCustomAttributes<SignalRReturnAttribute>().Distinct(_returnAttributeComparer).ToList();
 			if (!returnAttributes.Any()) returnAttributes.Add(new SignalRReturnAttribute());
 			foreach (var returnAttribute in returnAttributes)
 			{
 				var type = returnAttribute.ReturnType ?? returnArg.ParameterType;
 				if (!TryGetReturnType(type, out type)) continue;
-				var schema = GetOpenApiSchema(context, type);
 				var mediaType = new OpenApiMediaType
 				{
-					Schema = schema.Reference == null
-						? schema
-						: new OpenApiSchema
-						{
-							Reference = new OpenApiReference
-							{
-								Id = schema.Reference.Id,
-								Type = ReferenceType.Schema
-							}
-						}
+					Schema = GetOpenApiSchema(context, type)
 				};
 				responses.Add(returnAttribute.StatusCode.ToString(), new OpenApiResponse
 				{
 					Description = returnAttribute.Description,
-					Content = new Dictionary<string, OpenApiMediaType>
-					{
-						{ "application/json", mediaType },
-						{ "text/json", mediaType },
-						{ "text/plain", mediaType }
-					}
+					Content = GetContentByMediaType(mediaType)
 				});
 			}
 			return responses;
 		}
 
+		private static OpenApiRequestBody GetOpenApiRequestBody(DocumentFilterContext context, MethodInfo method)
+		{
+			var requestBodyAttribute = method.GetCustomAttribute<SignalRRequestBodyAttribute>();
+			if (requestBodyAttribute == null) return null;
+			var mediaType = new OpenApiMediaType
+			{
+				Schema = GetOpenApiSchema(context, requestBodyAttribute.BodyType)
+			};
+			return new OpenApiRequestBody
+			{
+				Required = requestBodyAttribute.IsRequired,
+				Description = requestBodyAttribute.Description,
+				Content = GetContentByMediaType(mediaType)
+			};
+		}
+
 		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
 		{
-			if (context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema)) return schema;
-			return context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema))
+			{
+				schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+			}
+			return schema.Reference == null
+				? schema
+				: new OpenApiSchema
+				{
+					Reference = new OpenApiReference
+					{
+						Id = schema.Reference.Id,
+						Type = ReferenceType.Schema
+					}
+				};
+		}
+
+		private static Dictionary<string, OpenApiMediaType> GetContentByMediaType(OpenApiMediaType mediaType)
+		{
+			return new Dictionary<string, OpenApiMediaType>
+			{
+				{ "application/json", mediaType },
+				{ "text/json", mediaType },
+				{ "text/plain", mediaType },
+			};
 		}
 
 		private static bool ShouldBeDisplayedOnDocument(DocumentFilterContext context, SignalRHubAttribute hubAttribute)
@@ -204,7 +220,7 @@ namespace SignalRSwaggerGen
 
 		private IEnumerable<Type> GetHubs()
 		{
-			return Assemblies
+			return _assemblies
 				.SelectMany(a =>
 					a.GetTypes()
 					.Where(t =>
@@ -278,7 +294,8 @@ namespace SignalRSwaggerGen
 			{
 				if (inType.IsGenericTypeDefinition) return false;
 				var genericTypeDef = inType.GetGenericTypeDefinition();
-				if (genericTypeDef == typeof(Task<>) || genericTypeDef == typeof(ValueTask<>))
+				if (genericTypeDef == typeof(Task<>)
+					|| genericTypeDef == typeof(ValueTask<>))
 				{
 					outType = inType.GetGenericArguments()[0];
 					return true;
@@ -286,9 +303,9 @@ namespace SignalRSwaggerGen
 			}
 			else
 			{
-				if (inType == typeof(void)) return false;
-				if (inType == typeof(Task)) return false;
-				if (inType == typeof(ValueTask)) return false;
+				if (inType == typeof(void)
+					|| inType == typeof(Task)
+					|| inType == typeof(ValueTask)) return false;
 			}
 			return true;
 		}

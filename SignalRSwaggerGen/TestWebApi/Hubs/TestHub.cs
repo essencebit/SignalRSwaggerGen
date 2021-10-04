@@ -31,6 +31,7 @@ namespace TestWebApi.Hubs
 			return;
 		}
 
+		[SignalRRequestBody(typeof(WeatherForecast), false, "request body description")]
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3(
 			int agr1,
