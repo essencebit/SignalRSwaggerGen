@@ -48,7 +48,7 @@ namespace SignalRSwaggerGen
 		{
 			var hubAttribute = hub.GetCustomAttribute<SignalRHubAttribute>();
 			if (!ShouldBeDisplayedOnDocument(context, hubAttribute)) return;
-			var hubPath = GetHubPath(hub, hubAttribute);
+			var hubPath = GetHubPath(hub, hubAttribute, hubAttribute.LowerCamelCase);
 			var tag = GetTag(hub);
 			var methods = GetHubMethods(hub, hubAttribute);
 			foreach (var method in methods)
@@ -66,7 +66,7 @@ namespace SignalRSwaggerGen
 			MethodInfo method)
 		{
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
-			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
+			var methodPath = GetMethodPath(hubPath, method, methodAttribute, hubAttribute.LowerCamelCase);
 			var methodArgs = GetMethodArgs(method, hubAttribute, methodAttribute);
 			var methodReturnArg = method.ReturnParameter;
 			var operationType = methodAttribute?.OperationType ?? Constants.DefaultOperationType;
@@ -200,18 +200,27 @@ namespace SignalRSwaggerGen
 				|| hubAttribute.DocumentNames.Contains(context.DocumentName);
 		}
 
-		private static string GetHubPath(Type hub, SignalRHubAttribute hubAttribute)
+		private static string GetHubPath(Type hub, SignalRHubAttribute hubAttribute, LowerCamelCase lowerCamelCase)
 		{
-			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, GetTypeName(hub));
+			var hubName = AdjustCasing(GetTypeName(hub), lowerCamelCase);
+			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, hubName);
 		}
 
-		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRMethodAttribute methodAttribute)
+		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRMethodAttribute methodAttribute, LowerCamelCase lowerCamelCase)
 		{
 			var methodPathSuffix = new string(' ', method.GetParameters().Length);
+			var methodName = AdjustCasing(method.Name, lowerCamelCase);
 			return methodAttribute == null
-				? $"{hubPath}/{method.Name}{methodPathSuffix}"
-				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}{methodPathSuffix}";
+				? $"{hubPath}/{methodName}{methodPathSuffix}"
+				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, methodName)}{methodPathSuffix}";
 		}
+
+		private static string AdjustCasing(string input, LowerCamelCase lowerCamelCase)
+        {
+			return lowerCamelCase == LowerCamelCase.Default 
+				? input
+				: char.ToLowerInvariant(input[0]) + input[1..];
+        }
 
 		private static string GetTag(Type hub)
 		{
