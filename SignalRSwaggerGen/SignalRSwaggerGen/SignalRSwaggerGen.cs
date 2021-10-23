@@ -44,18 +44,30 @@ namespace SignalRSwaggerGen
 			}
 		}
 
-		private static void ProcessHub(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hub)
+		private static void ProcessHub(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hubType)
 		{
-			var hubAttribute = hub.GetCustomAttribute<SignalRHubAttribute>();
+			var hubAttribute = hubType.GetCustomAttribute<SignalRHubAttribute>();
 			if (!ShouldBeDisplayedOnDocument(context, hubAttribute)) return;
-			var hubPath = GetHubPath(hub, hubAttribute);
-			var tag = GetTag(hub);
-			var methods = GetHubMethods(hub, hubAttribute);
+
+			var tag = GetTag(hubType);
+			var path = GetHubPath(hubType, hubAttribute);
+			ProcessType(swaggerDoc, context, hubType, hubAttribute, tag, path);
+		}
+
+		private static void ProcessType(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hubType, SignalRHubAttribute hubAttribute, string hubTag, string hubPath)
+		{
+			var methods = GetHubMethods(hubType, hubAttribute);
 			foreach (var method in methods)
 			{
-				ProcessMethod(swaggerDoc, context, hubAttribute, hubPath, tag, method);
+				ProcessMethod(swaggerDoc, context, hubAttribute, hubPath, hubTag, method);
 			}
-		}
+
+            if (hubType.BaseType?.IsGenericType == true)
+            {
+                var clientType = hubType.BaseType.GenericTypeArguments.First();
+                ProcessType(swaggerDoc, context, clientType, hubAttribute, $"{hubTag}.Client", hubPath);
+            }
+        }
 
 		private static void ProcessMethod(
 			OpenApiDocument swaggerDoc,
