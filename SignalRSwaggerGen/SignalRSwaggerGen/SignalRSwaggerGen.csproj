@@ -10,11 +10,11 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>2.3.0</Version>
-    <PackageReleaseNotes>1. Added support for request body section(SignalRRequestBodyAttribute)</PackageReleaseNotes>
-    <AssemblyVersion>2.3.0.0</AssemblyVersion>
+    <Version>2.4.0</Version>
+    <PackageReleaseNotes>1. Added support for hub and method name transformation(nameTransformerType parameter for SignalRHubAttribute)</PackageReleaseNotes>
+    <AssemblyVersion>2.4.0.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>2.3.0.0</FileVersion>
+    <FileVersion>2.4.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 

@@ -15,7 +15,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="bodyType">The type of the request body</param>
 		/// <param name="isRequired">The value that indicates if the request body is required or not</param>
 		/// <param name="description">The text that will appear in description section of the corresponding request body in Swagger document</param>
-		/// <exception cref="ArgumentNullException">Thrown if body type is null</exception>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="bodyType"/> is null</exception>
 		public SignalRRequestBodyAttribute(Type bodyType, bool isRequired = false, string description = null)
 		{
 			BodyType = bodyType ?? throw new ArgumentNullException(nameof(bodyType));

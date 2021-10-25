@@ -22,12 +22,17 @@
             Use this attribute to enable Swagger documentation for hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[])">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type)">
             <param name="path">Relative path of the hub.
             If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
             <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in. If null or empty array specified, then the hub will be displayed in all documents.</param>
-            <exception cref="T:System.ArgumentException">Thrown if path is null or empty, or auto-discover value not allowed for this attribute</exception>
+            <param name="nameTransformerType">The type of the name transformer. The type must inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class, be non-abstract and have public parameterless constructor.
+            The name transformer will be used to transform the name of the hub and its methods. If null specified, no transformation will happen. The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.</param>
+            <exception cref="T:System.ArgumentException">Thrown if
+            - <paramref name="path"/> is null or empty
+            - <paramref name="autoDiscover"/> value not allowed for this attribute
+            - <paramref name="nameTransformerType"/> is abstract or does not inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class or has no public parameterless constructor</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
             <summary>
@@ -41,7 +46,9 @@
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
             <param name="summary">The text that will appear in summary section of decorated method in Swagger document</param>
             <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
-            <exception cref="T:System.ArgumentException">Thrown if name is null or empty, or auto-discover value not allowed for this attribute</exception>
+            <exception cref="T:System.ArgumentException">Thrown if
+            - <paramref name="name"/> is null or empty
+            - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRRequestBodyAttribute">
             <summary>
@@ -52,7 +59,7 @@
             <param name="bodyType">The type of the request body</param>
             <param name="isRequired">The value that indicates if the request body is required or not</param>
             <param name="description">The text that will appear in description section of the corresponding request body in Swagger document</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if body type is null</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="bodyType"/> is null</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
             <summary>
@@ -89,10 +96,43 @@
             Public non-static methods and their args
             </summary>
         </member>
+        <member name="T:SignalRSwaggerGen.Naming.NameTransformer">
+            <summary>
+            Inherit from this class in order to create a name transformer
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.NameTransformer.Transform(System.String)">
+            <summary>
+            Name transformation function
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Transformed name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToCamelTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to camel case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Camel case name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToLowerTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to lower case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Lower case name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToUpperTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to upper case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Upper case name</returns>
+        </member>
         <member name="T:SignalRSwaggerGen.SignalRSwaggerGen">
             <summary>
             This class can be used by Swagger to generate documentation for SignalR hubs.
-            In order for Swagger to use this class, just add this class as document filter for Swagger generator.
+            In order for Swagger to use this class, just add it as document filter for Swagger generator.
             Don't forget to add the list of assemblies which contain SignalR hubs as parameter for this document filter.
             </summary>
         </member>

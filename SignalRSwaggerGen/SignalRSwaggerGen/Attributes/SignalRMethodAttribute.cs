@@ -25,7 +25,9 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
 		/// <param name="summary">The text that will appear in summary section of decorated method in Swagger document</param>
 		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
-		/// <exception cref="ArgumentException">Thrown if name is null or empty, or auto-discover value not allowed for this attribute</exception>
+		/// <exception cref="ArgumentException">Thrown if
+		/// - <paramref name="name"/> is null or empty
+		/// - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
 		public SignalRMethodAttribute(
 			string name = Constants.MethodNamePlaceholder,
 			OperationType operationType = Constants.DefaultOperationType,

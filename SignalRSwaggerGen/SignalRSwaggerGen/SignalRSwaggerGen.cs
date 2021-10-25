@@ -14,7 +14,7 @@ namespace SignalRSwaggerGen
 {
 	/// <summary>
 	/// This class can be used by Swagger to generate documentation for SignalR hubs.
-	/// In order for Swagger to use this class, just add this class as document filter for Swagger generator.
+	/// In order for Swagger to use this class, just add it as document filter for Swagger generator.
 	/// Don't forget to add the list of assemblies which contain SignalR hubs as parameter for this document filter.
 	/// </summary>
 	public sealed class SignalRSwaggerGen : IDocumentFilter
@@ -66,7 +66,7 @@ namespace SignalRSwaggerGen
 			MethodInfo method)
 		{
 			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
-			var methodPath = GetMethodPath(hubPath, method, methodAttribute);
+			var methodPath = GetMethodPath(hubPath, method, hubAttribute, methodAttribute);
 			var methodArgs = GetMethodArgs(method, hubAttribute, methodAttribute);
 			var methodReturnArg = method.ReturnParameter;
 			var operationType = methodAttribute?.OperationType ?? Constants.DefaultOperationType;
@@ -202,15 +202,19 @@ namespace SignalRSwaggerGen
 
 		private static string GetHubPath(Type hub, SignalRHubAttribute hubAttribute)
 		{
-			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, GetTypeName(hub));
+			var hubName = GetTypeName(hub);
+			if (hubAttribute.NameTransformer != null) hubName = hubAttribute.NameTransformer.Transform(hubName);
+			return hubAttribute.Path.Replace(Constants.HubNamePlaceholder, hubName);
 		}
 
-		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRMethodAttribute methodAttribute)
+		private static string GetMethodPath(string hubPath, MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
 		{
 			var methodPathSuffix = new string(' ', method.GetParameters().Length);
-			return methodAttribute == null
-				? $"{hubPath}/{method.Name}{methodPathSuffix}"
-				: $"{hubPath}/{methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name)}{methodPathSuffix}";
+			var methodName = methodAttribute == null
+				? method.Name
+				: methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name);
+			if (hubAttribute.NameTransformer != null) methodName = hubAttribute.NameTransformer.Transform(methodName);
+			return $"{hubPath}/{methodName}{methodPathSuffix}";
 		}
 
 		private static string GetTag(Type hub)

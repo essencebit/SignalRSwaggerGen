@@ -2,7 +2,7 @@
 
 namespace SignalRSwaggerGen.Utils
 {
-	public class ReflectionUtils
+	internal class ReflectionUtils
 	{
 		public const BindingFlags DeclaredPublicInstance = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
 	}
