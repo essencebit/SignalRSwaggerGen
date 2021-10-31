@@ -9,8 +9,9 @@
             Use this attribute to enable Swagger documentation for method args
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRArgAttribute.#ctor(System.String)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRArgAttribute.#ctor(System.String,System.Type)">
             <param name="description">The text that will appear in description section of decorated argument in Swagger document</param>
+            <param name="argType">Argument type. If null specified, the type of the argument holding this attribute will be picked up.</param>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRHiddenAttribute">
             <summary>

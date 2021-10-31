@@ -115,13 +115,14 @@ namespace SignalRSwaggerGen
 			{
 				var argAttribute = arg.GetCustomAttribute<SignalRArgAttribute>();
 				var description = argAttribute?.Description;
+				var type = argAttribute?.ArgType ?? arg.ParameterType;
 				var param = new OpenApiParameter
 				{
 					Name = arg.Name,
 					In = ParameterLocation.Query,
 					Description = description
 				};
-				param.Schema = GetOpenApiSchema(context, arg.ParameterType);
+				param.Schema = GetOpenApiSchema(context, type);
 				return param;
 			});
 		}

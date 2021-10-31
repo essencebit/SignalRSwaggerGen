@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestWebApi.Hubs
 {
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs, documentNames: new[] { "hubs" })]
 	public class StronglyTypedTestHub : Hub<IStronglyTypedTestHub>
 	{
 		public async Task TestMethod()
@@ -37,7 +38,7 @@ namespace TestWebApi.Hubs
 		[SignalRRequestBody(typeof(WeatherForecast), false, "request body description")]
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3(
-			int agr1,
+			[SignalRArg(argType: typeof(WeatherForecast))] int agr1,
 			string arg2,
 			WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken);
