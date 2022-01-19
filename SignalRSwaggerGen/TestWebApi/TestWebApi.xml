@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>TestWebApi</name>
+    </assembly>
+    <members>
+        <member name="T:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2">
+            <summary>
+            xml commented hub
+            </summary>
+            <typeparam name="TO1"></typeparam>
+            <typeparam name="TC1"></typeparam>
+        </member>
+        <member name="M:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2.Method1``2(TestWebApi.Hubs.Outer.Middle{System.Int32,``0}.Inner.GenericClass{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.GenericClass{System.Boolean,`3,``1[]},`2,`1[0:,0:]}[0:,0:,0:][][0:,0:,0:,0:]@,TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{``0}.IInterface{System.Collections.Generic.List{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{``0}}[0:,0:],TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.GenericClass{TestWebApi.Hubs.Outer,TestWebApi.Hubs.Outer.Middle{`1,`2},TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner}}.Delegate{System.Object[0:,0:,0:,0:][0:,0:,0:,0:,0:][][][][0:,0:,0:][][0:,0:,0:,0:,0:],System.Collections.Generic.List{System.Object}[]}}*,System.Collections.Generic.List{System.Collections.Generic.List{System.Collections.Generic.Dictionary{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct},`3},System.Collections.Generic.ISet{`1}[][][0:,0:,0:]}}},System.Collections.Generic.List{System.Collections.Generic.List{System.Collections.Generic.Dictionary{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct}.IInterface{``1,System.Object}.Delegate{System.Boolean,TestWebApi.Hubs.Outer.Middle{`0,`1}.Inner.XmlCommentedHub{`2,`3}.Struct.GenericStruct{`2[0:,0:,0:,0:,0:,0:][]}.IInterface{System.String,System.Nullable{System.Int32}}.Delegate{System.SByte,System.DateTime}[][][0:,0:,0:,0:,0:,0:,0:,0:]}},`3},System.Collections.Generic.ISet{`1}[][][0:,0:,0:]}}})">
+            <summary>
+            xml commented method1 summary
+            </summary>
+            <typeparam name="TA1"></typeparam>
+            <typeparam name="TA2"></typeparam>
+            <param name="arg1">xml commented arg1 description</param>
+            <param name="arg2">xml commented arg2 description</param>
+            <param name="arg3">xml commented arg3 description</param>
+            <param name="arg4">xml commented arg4 description</param>
+            <returns>something</returns>
+        </member>
+        <member name="M:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2.Method2``2">
+            <summary>
+            xml commented method2 summary
+            </summary>
+            <typeparam name="TArg1"></typeparam>
+            <typeparam name="TArg2"></typeparam>
+        </member>
+        <member name="M:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2.Method3">
+            <summary>
+            xml commented method3 summary
+            </summary>
+        </member>
+    </members>
+</doc>

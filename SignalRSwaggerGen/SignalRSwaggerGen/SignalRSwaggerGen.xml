@@ -4,15 +4,6 @@
         <name>SignalRSwaggerGen</name>
     </assembly>
     <members>
-        <member name="T:SignalRSwaggerGen.Attributes.SignalRArgAttribute">
-            <summary>
-            Use this attribute to enable Swagger documentation for method args
-            </summary>
-        </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRArgAttribute.#ctor(System.String,System.Type)">
-            <param name="description">The text that will appear in description section of decorated argument in Swagger document</param>
-            <param name="argType">Argument type. If null specified, the type of the argument holding this attribute will be picked up.</param>
-        </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRHiddenAttribute">
             <summary>
             Use this attribute to disable Swagger documentation for specific components
@@ -23,15 +14,20 @@
             Use this attribute to enable Swagger documentation for hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type)">
-            <param name="path">Relative path of the hub.
-            If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute.</param>
-            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
-            <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in. If null or empty array specified, then the hub will be displayed in all documents.</param>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean)">
+            <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
+            If not specified, the func from 'SignalRSwaggerGenOptions' will be used to get the path.</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
+            If 'AutoDiscover.Inherit' specified, the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
+            If null specified, then the value from 'SignalRSwaggerGenOptions' will be used. If empty array specified, then the hub will be displayed in all documents.</param>
             <param name="nameTransformerType">The type of the name transformer. The type must inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class, be non-abstract and have public parameterless constructor.
-            The name transformer will be used to transform the name of the hub and its methods. If null specified, no transformation will happen. The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.</param>
+            The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from 'SignalRSwaggerGenOptions' will be used.
+            The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.</param>
+            <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
+            If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
+            <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
             <exception cref="T:System.ArgumentException">Thrown if
-            - <paramref name="path"/> is null or empty
             - <paramref name="autoDiscover"/> value not allowed for this attribute
             - <paramref name="nameTransformerType"/> is abstract or does not inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class or has no public parameterless constructor</exception>
         </member>
@@ -40,16 +36,27 @@
             Use this attribute to enable Swagger documentation for hub methods
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,Microsoft.OpenApi.Models.OperationType,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String)">
             <param name="name">Name of the method which will be invoked on the client side.
             If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
-            <param name="operationType">Same as HTTP verb</param>
-            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically</param>
-            <param name="summary">The text that will appear in summary section of decorated method in Swagger document</param>
+            <param name="operation">Same as HTTP verb. If 'Operation.Inherit' specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
+            If 'AutoDiscover.Inherit' specified, the value from the hub will be used. If the hub also has this value specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
+            If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
             <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
             <exception cref="T:System.ArgumentException">Thrown if
             - <paramref name="name"/> is null or empty
             - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRParamAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for method params
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type)">
+            <param name="description">The text that will appear in description section of decorated parameter in Swagger document</param>
+            <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRRequestBodyAttribute">
             <summary>
@@ -77,6 +84,11 @@
             A flag indicating what components will have Swagger documentation enabled automatically
             </summary>
         </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit">
+            <summary>
+            Inherit value from higher level configurations
+            </summary>
+        </member>
         <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.None">
             <summary>
             None
@@ -87,14 +99,24 @@
             Public non-static methods
             </summary>
         </member>
-        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Args">
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Params">
             <summary>
-            Method args
+            Method params
             </summary>
         </member>
-        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.MethodsAndArgs">
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.MethodsAndParams">
             <summary>
-            Public non-static methods and their args
+            Public non-static methods and their params
+            </summary>
+        </member>
+        <member name="T:SignalRSwaggerGen.Enums.Operation">
+            <summary>
+            Same as HTTP verb
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.Operation.Inherit">
+            <summary>
+            Inherit value from higher level configurations
             </summary>
         </member>
         <member name="T:SignalRSwaggerGen.Naming.NameTransformer">
@@ -130,23 +152,145 @@
             <param name="name">The name to transform</param>
             <returns>Upper case name</returns>
         </member>
-        <member name="T:SignalRSwaggerGen.SignalRSwaggerGen">
+        <member name="T:SignalRSwaggerGen.SignalRSwaggerGenOptions">
             <summary>
-            This class can be used by Swagger to generate documentation for SignalR hubs.
-            In order for Swagger to use this class, just add it as document filter for Swagger generator.
-            Don't forget to add the list of assemblies which contain SignalR hubs as parameter for this document filter.
+            Options used by SignalRSwaggerGen to generate documentation for SignalR hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.#ctor(System.Collections.Generic.List{System.Reflection.Assembly})">
-            <param name="assemblies">Assemblies which contain SignalR hubs</param>
-            <exception cref="T:System.ArgumentException">Thrown if no assemblies provided</exception>
-        </member>
-        <member name="M:SignalRSwaggerGen.SignalRSwaggerGen.Apply(Microsoft.OpenApi.Models.OpenApiDocument,Swashbuckle.AspNetCore.SwaggerGen.DocumentFilterContext)">
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.HubPathFunc">
             <summary>
-            This method is automatically called by Swagger generator
+            The func that will get the hub name and return the path for the hub. The func will be skipped for the hubs that have a not null path specified for them in particular.
+            If the func not specified explicitly, the default func will return a value based on the template 'Constants.DefaultHubPathTemplate'.
+            If you decide to set a custom func, make sure the func will return a different path for each hub.
             </summary>
-            <param name="swaggerDoc"></param>
-            <param name="context"></param>
+            <example>hubName => $"hubs/are/here/{hubName}"</example>
+            <exception cref="T:System.ArgumentNullException">Thrown if the value is null</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.AutoDiscover">
+            <summary>
+            A flag indicating what components will have Swagger documentation enabled automatically.
+            Can be overridden for a specific component by specifying auto-discover value for that component in particular.
+            If not specified explicitly, the default value is 'Constants.DefaultAutoDiscover'.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is 'AutoDiscover.Inherit', since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.Operation">
+            <summary>
+            Same as HTTP verb. Can be overridden for a specific method by specifying the operation for that method in particular.
+            If not specified explicitly, the default value is 'Constants.DefaultOperation'.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is 'Operation.Inherit', since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.NameTransformer">
+            <summary>
+            The name transformer that will be used to transform the name of the hubs and their methods.
+            Can be overridden for a specific component by specifying a transformer for that component in particular.
+            If not specified at any level, no transformation will happen. The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Thrown if the value is null</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.UseHubXmlCommentsSummaryAsTag">
+            <summary>
+            Use summary section from hub's XML comments as tag for Swagger doc
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.ScanAssembly(System.Reflection.Assembly)">
+            <summary>
+            Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assembly">Assembly to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assembly"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.ScanAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.ScanAssemblies(System.Reflection.Assembly[])">
+            <summary>
+            Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisplayInDocument(System.String)">
+            <summary>
+            Specify the name of the Swagger document the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentName">Name of the Swagger document the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentName"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisplayInDocuments(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specify the list of names of the Swagger documents the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisplayInDocuments(System.String[])">
+            <summary>
+            Specify the list of names of the Swagger documents the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.UseXmlComments(System.String)">
+            <summary>
+            Specify an XML comments file to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="path">Path to the file that contains XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="path"/> is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="path"/> does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.UseXmlComments(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specify a list of XML comments files to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="paths">Paths to the files that contain XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.UseXmlComments(System.String[])">
+            <summary>
+            Specify a list of XML comments files to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="paths">Paths to the files that contain XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions.AddSignalRSwaggerGen(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
+            <summary>
+            Add SignalRSwaggerGen to generate documentation for SignalR hubs
+            </summary>
+            <param name="swaggerGenOptions">...</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions.AddSignalRSwaggerGen(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions,System.Action{SignalRSwaggerGen.SignalRSwaggerGenOptions})">
+            <summary>
+            Add SignalRSwaggerGen to generate documentation for SignalR hubs
+            </summary>
+            <param name="swaggerGenOptions">...</param>
+            <param name="action">Action for setting up options for SignalRSwaggerGen</param>
         </member>
     </members>
 </doc>

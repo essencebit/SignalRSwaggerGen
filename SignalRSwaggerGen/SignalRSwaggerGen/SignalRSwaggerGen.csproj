@@ -10,11 +10,15 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>2.5.0</Version>
-    <PackageReleaseNotes>1. Added possibility to specify custom argument type(argType parameter for SignalRArgAttribute)</PackageReleaseNotes>
-    <AssemblyVersion>2.5.0.0</AssemblyVersion>
+    <Version>3.0.0</Version>
+    <PackageReleaseNotes>This is a major release with essencial redesign(breaking changes to be expected):
+1. Solved API naming issues(SignalRArgAttribute became SignalRParamAttribute)
+2. Now SignalRSwaggerGen is enabled via a SwaggerGenOptions extension method, with the possibility to specify various options regarding Swagger doc generation
+3. Added support for XML comments consumption
+5. Now if auto-discover not specified for hub/method, the value is taken from options, which by default now is MethodsAndParams</PackageReleaseNotes>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>2.5.0.0</FileVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
   </PropertyGroup>
 

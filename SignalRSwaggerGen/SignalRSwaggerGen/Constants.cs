@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using SignalRSwaggerGen.Enums;
 
 namespace SignalRSwaggerGen
 {
@@ -6,7 +6,8 @@ namespace SignalRSwaggerGen
 	{
 		public const string HubNamePlaceholder = "[Hub]";
 		public const string MethodNamePlaceholder = "[Method]";
-		public const string DefaultHubPath = "hubs/[Hub]";
-		public const OperationType DefaultOperationType = OperationType.Post;
+		public const string DefaultHubPathTemplate = "hubs/" + HubNamePlaceholder;
+		public const AutoDiscover DefaultAutoDiscover = AutoDiscover.MethodsAndParams;
+		public const Operation DefaultOperation = Operation.Post;
 	}
 }

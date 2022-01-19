@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace TestWebApi.Hubs
 {
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndArgs, documentNames: new[] { "hubs" }, nameTransformerType: typeof(ToLowerTransformer))]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" }, nameTransformerType: typeof(ToLowerTransformer))]
 	public class TestHub : Hub
 	{
 		[return: SignalRReturn]
-		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Args)]
+		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Params)]
 		public ValueTask TestMethod(
 			int agr1,
 			string arg2,
-			[SignalRArg(description: "arg3 description")] WeatherForecast arg3,
+			[SignalRParam(description: "arg3 description")] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken)
 		{
 			return default;
@@ -23,10 +23,10 @@ namespace TestWebApi.Hubs
 
 		[return: SignalRReturn(typeof(Task<WeatherForecast>), 200, "Success")]
 		[return: SignalRReturn(returnType: typeof(ValueTask<>), statusCode: 201, description: "Created")]
-		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Args)]
+		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Params)]
 		public void TestMethod2(
-			[SignalRArg(description: "arg1 description")] int agr1,
-			[SignalRArg(description: "arg2 description")] string arg2,
+			[SignalRParam(description: "arg1 description")] int agr1,
+			[SignalRParam(description: "arg2 description")] string arg2,
 			WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken)
 		{

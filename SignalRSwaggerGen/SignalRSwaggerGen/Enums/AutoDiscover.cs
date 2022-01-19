@@ -6,6 +6,11 @@ namespace SignalRSwaggerGen.Enums
 	public enum AutoDiscover
 	{
 		/// <summary>
+		/// Inherit value from higher level configurations
+		/// </summary>
+		Inherit = -1,
+
+		/// <summary>
 		/// None
 		/// </summary>
 		None = 0,
@@ -13,16 +18,16 @@ namespace SignalRSwaggerGen.Enums
 		/// <summary>
 		/// Public non-static methods
 		/// </summary>
-		Methods,
+		Methods = 1,
 
 		/// <summary>
-		/// Method args
+		/// Method params
 		/// </summary>
-		Args,
+		Params = 2,
 
 		/// <summary>
-		/// Public non-static methods and their args
+		/// Public non-static methods and their params
 		/// </summary>
-		MethodsAndArgs
+		MethodsAndParams = 3,
 	}
 }

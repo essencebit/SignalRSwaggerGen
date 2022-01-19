@@ -4,13 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using System.Collections.Generic;
-using System.Reflection;
-using TestWebApi.Hubs;
 
 namespace TestWebApi
 {
-	public class Startup
+	internal class Startup
 	{
 		public Startup(IConfiguration configuration)
 		{
@@ -28,7 +25,8 @@ namespace TestWebApi
 				var apiInfo = new OpenApiInfo { Title = "TestWebApi", Version = "v1" };
 				options.SwaggerDoc("controllers", apiInfo);
 				options.SwaggerDoc("hubs", apiInfo);
-				options.DocumentFilter<SignalRSwaggerGen.SignalRSwaggerGen>(new List<Assembly> { typeof(TestHub).Assembly });
+				options.IncludeXmlComments("TestWebApi.xml", true);
+				options.AddSignalRSwaggerGen();
 			});
 		}
 

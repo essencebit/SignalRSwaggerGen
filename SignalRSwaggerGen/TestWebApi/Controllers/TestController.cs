@@ -17,9 +17,9 @@ namespace TestWebApi.Controllers
 		}
 
 		[HttpPost]
-		public int Post()
+		public int Post([FromBody] WeatherForecast body)
 		{
-			return default;
+			return body.TemperatureC;
 		}
 	}
 }
