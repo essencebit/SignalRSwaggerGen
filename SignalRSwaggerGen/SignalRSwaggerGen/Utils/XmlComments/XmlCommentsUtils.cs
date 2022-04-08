@@ -10,7 +10,10 @@ namespace SignalRSwaggerGen.Utils.XmlComments
 	{
 		public static string GetXmlCommentsName(this Type type)
 		{
-			string result = $"T:{GetTypeName(type)}";
+			if (type == null) throw new ArgumentNullException(nameof(type));
+
+			var result = $"T:{GetTypeName(type)}";
+
 			return result;
 		}
 
@@ -82,9 +85,13 @@ namespace SignalRSwaggerGen.Utils.XmlComments
 
 		private static string GetGenericParameterParamTypeName(Type paramType)
 		{
+#if NETSTANDARD2_1
 			if (paramType.IsGenericMethodParameter) return $"``{paramType.GenericParameterPosition}";
 			if (paramType.IsGenericTypeParameter) return $"`{paramType.GenericParameterPosition}";
 			throw new NotSupportedException($"Type [{paramType.AssemblyQualifiedName}] not supported");
+#else
+			throw new NotSupportedException("Certain API required for further execution is missing. Target netstandard2.1 to get rid of this exception.");
+#endif
 		}
 
 		private static string GetGenericParamTypeName(Type paramType)

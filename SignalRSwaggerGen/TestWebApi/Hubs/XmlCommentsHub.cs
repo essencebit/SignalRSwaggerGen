@@ -17,7 +17,7 @@ namespace TestWebApi.Hubs
 				/// </summary>
 				/// <typeparam name="TO1"></typeparam>
 				/// <typeparam name="TC1"></typeparam>
-				[SignalRHub]
+				[SignalRHub(documentNames: new[] { "hubs" })]
 				public class XmlCommentedHub<TO1, TC1>
 				{
 					public struct Struct

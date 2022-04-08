@@ -1,4 +1,5 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Utils;
@@ -50,13 +51,14 @@ namespace SignalRSwaggerGen
 			foreach (var method in methods)
 			{
 				var methodXml = GetMethodXml(method, xmlComments);
-				ProcessMethod(swaggerDoc, context, hubAttribute, hubPath, tag, method, methodXml);
+				ProcessMethod(swaggerDoc, context, hub, hubAttribute, hubPath, tag, method, methodXml);
 			}
 		}
 
 		private void ProcessMethod(
 			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
+			Type hub,
 			SignalRHubAttribute hubAttribute,
 			string hubPath,
 			string tag,
@@ -70,12 +72,13 @@ namespace SignalRSwaggerGen
 			var operation = GetOperation(methodAttribute);
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
 			var description = methodAttribute?.Description;
-			AddOpenApiPath(swaggerDoc, context, hubAttribute, tag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
+			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, tag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
 		}
 
 		private static void AddOpenApiPath(
 			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
+			Type hub,
 			SignalRHubAttribute hubAttribute,
 			string tag,
 			string methodPath,
@@ -103,10 +106,39 @@ namespace SignalRSwaggerGen
 								Parameters = ToOpenApiParameters(context, hubAttribute, methodParams, methodXml).ToList(),
 								Responses = ToOpenApiResponses(context, methodReturnParam),
 								RequestBody =  GetOpenApiRequestBody(context, method),
+								Security = GetSecurity(hub, method),
 							}
 						}
 					}
 				});
+		}
+
+		private static IList<OpenApiSecurityRequirement> GetSecurity(Type hub, MethodInfo method)
+		{
+			var securityEnabled =
+				hub.GetCustomAttribute<AuthorizeAttribute>() != null
+				&& method.GetCustomAttribute<AllowAnonymousAttribute>() == null
+				|| method.GetCustomAttribute<AuthorizeAttribute>() != null;
+
+			return securityEnabled
+				? new List<OpenApiSecurityRequirement>
+				{
+					new OpenApiSecurityRequirement
+					{
+						{
+							new OpenApiSecurityScheme
+							{
+								Reference = new OpenApiReference
+								{
+									Type = ReferenceType.SecurityScheme,
+									Id = "basic",
+								}
+							},
+							Array.Empty<string>()
+						}
+					}
+				}
+				: null;
 		}
 
 		private static IEnumerable<OpenApiParameter> ToOpenApiParameters(
@@ -217,7 +249,7 @@ namespace SignalRSwaggerGen
 		private static string GetHubName(Type hub)
 		{
 			var hubName = hub.IsInterface && hub.Name[0] == 'I'
-				? hub.Name[1..]
+				? hub.Name.Substring(1)
 				: hub.Name;
 			return hubName.Split('`')[0];
 		}
@@ -373,9 +405,11 @@ namespace SignalRSwaggerGen
 			var xmlSerializer = new XmlSerializer(typeof(XmlComments));
 			foreach (var path in _options.PathsToXmlCommentsFiles)
 			{
-				using var streamReader = new StreamReader(path);
-				var xmlComments = (XmlComments)xmlSerializer.Deserialize(streamReader);
-				_xmlComments.Add(xmlComments);
+				using (var streamReader = new StreamReader(path))
+				{
+					var xmlComments = (XmlComments)xmlSerializer.Deserialize(streamReader);
+					_xmlComments.Add(xmlComments);
+				}
 			}
 		}
 	}

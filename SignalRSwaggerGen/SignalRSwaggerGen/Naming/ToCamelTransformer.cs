@@ -12,7 +12,7 @@ namespace SignalRSwaggerGen.Naming
 		public override string Transform(string name)
 		{
 			if (name.IsNullOrEmpty()) return name;
-			return char.ToLowerInvariant(name[0]) + name[1..];
+			return char.ToLowerInvariant(name[0]) + name.Substring(1);
 		}
 	}
 }

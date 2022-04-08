@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using System.Threading;
@@ -18,6 +19,7 @@ namespace TestWebApi.Hubs
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" })]
 	public interface IStronglyTypedTestHub
 	{
+		[Authorize]
 		[return: SignalRReturn]
 		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Params)]
 		public ValueTask TestMethod(
