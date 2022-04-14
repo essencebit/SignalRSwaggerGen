@@ -5,7 +5,7 @@
     <SignAssembly>false</SignAssembly>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <Authors>Dorin Mocan</Authors>
-    <Company></Company>
+    <Company>Essencebit</Company>
     <Description>This package can be used to generate Swagger documentation for SignalR hubs.</Description>
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
@@ -17,6 +17,8 @@ Added support for AuthorizeAttribute &amp; AllowAnonymousAttribute</PackageRelea
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <FileVersion>3.2.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+    <PackageIcon>Logo.png</PackageIcon>
+    <PackageIconUrl />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -25,6 +27,10 @@ Added support for AuthorizeAttribute &amp; AllowAnonymousAttribute</PackageRelea
 
   <ItemGroup>
     <None Include="..\..\LICENSE.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\..\Logo.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
