@@ -10,12 +10,11 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>3.2.0</Version>
-    <PackageReleaseNotes>Added support for both netstandard2.1 &amp; netstandard2.0
-Added support for AuthorizeAttribute &amp; AllowAnonymousAttribute</PackageReleaseNotes>
-    <AssemblyVersion>3.2.0.0</AssemblyVersion>
+    <Version>3.2.1</Version>
+    <PackageReleaseNotes>Fixed default hub path template</PackageReleaseNotes>
+    <AssemblyVersion>3.2.1.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>3.2.0.0</FileVersion>
+    <FileVersion>3.2.1.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageIconUrl />
