@@ -46,12 +46,12 @@ namespace SignalRSwaggerGen
 			if (!HubShouldBeDisplayedOnDocument(context, hubAttribute)) return;
 			var hubXml = GetHubXml(hub, xmlComments);
 			var hubPath = GetHubPath(hub, hubAttribute);
-			var tag = GetTag(hub, hubAttribute, hubXml);
+			var hubTag = GetHubTag(hub, hubAttribute, hubXml);
 			var methods = GetHubMethods(hub, hubAttribute);
 			foreach (var method in methods)
 			{
 				var methodXml = GetMethodXml(method, xmlComments);
-				ProcessMethod(swaggerDoc, context, hub, hubAttribute, hubPath, tag, method, methodXml);
+				ProcessMethod(swaggerDoc, context, hub, hubAttribute, hubPath, hubTag, method, methodXml);
 			}
 		}
 
@@ -61,7 +61,7 @@ namespace SignalRSwaggerGen
 			Type hub,
 			SignalRHubAttribute hubAttribute,
 			string hubPath,
-			string tag,
+			string hubTag,
 			MethodInfo method,
 			MemberElement methodXml)
 		{
@@ -72,7 +72,8 @@ namespace SignalRSwaggerGen
 			var operation = GetOperation(methodAttribute);
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
 			var description = methodAttribute?.Description;
-			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, tag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
+			var methodTag = GetMethodTag(hubTag, methodAttribute);
+			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
 		}
 
 		private static void AddOpenApiPath(
@@ -102,8 +103,8 @@ namespace SignalRSwaggerGen
 							{
 								Summary = summary,
 								Description = description,
-								Tags = new List<OpenApiTag> { new OpenApiTag { Name = tag } },
-								Parameters = ToOpenApiParameters(context, hubAttribute, methodParams, methodXml).ToList(),
+								Tags = ToOpenApiTags(tag),
+								Parameters = ToOpenApiParameters(context, hubAttribute, methodParams, methodXml),
 								Responses = ToOpenApiResponses(context, methodReturnParam),
 								RequestBody =  GetOpenApiRequestBody(context, method),
 								Security = GetSecurity(hub, method),
@@ -111,6 +112,11 @@ namespace SignalRSwaggerGen
 						}
 					}
 				});
+		}
+
+		private static List<OpenApiTag> ToOpenApiTags(string tag)
+		{
+			return new List<OpenApiTag> { new OpenApiTag { Name = tag } };
 		}
 
 		private static IList<OpenApiSecurityRequirement> GetSecurity(Type hub, MethodInfo method)
@@ -141,26 +147,28 @@ namespace SignalRSwaggerGen
 				: null;
 		}
 
-		private static IEnumerable<OpenApiParameter> ToOpenApiParameters(
+		private static IList<OpenApiParameter> ToOpenApiParameters(
 			DocumentFilterContext context,
 			SignalRHubAttribute hubAttribute,
 			IEnumerable<ParameterInfo> parameters,
 			MemberElement methodXml)
 		{
-			return parameters.Select(param =>
-			{
-				var paramXml = methodXml?.Params?.FirstOrDefault(x => x.Name == param.Name);
-				var paramAttribute = param.GetCustomAttribute<SignalRParamAttribute>();
-				var description = GetParamDescription(hubAttribute, paramAttribute, paramXml);
-				var type = paramAttribute?.ParamType ?? param.ParameterType;
-				return new OpenApiParameter
+			return parameters
+				.Select(param =>
 				{
-					Name = param.Name,
-					In = ParameterLocation.Query,
-					Description = description,
-					Schema = GetOpenApiSchema(context, type),
-				};
-			});
+					var paramXml = methodXml?.Params?.FirstOrDefault(x => x.Name == param.Name);
+					var paramAttribute = param.GetCustomAttribute<SignalRParamAttribute>();
+					var description = GetParamDescription(hubAttribute, paramAttribute, paramXml);
+					var type = paramAttribute?.ParamType ?? param.ParameterType;
+					return new OpenApiParameter
+					{
+						Name = param.Name,
+						In = ParameterLocation.Query,
+						Description = description,
+						Schema = GetOpenApiSchema(context, type),
+					};
+				})
+				.ToList();
 		}
 
 		private static OpenApiResponses ToOpenApiResponses(DocumentFilterContext context, ParameterInfo returnParam)
@@ -254,7 +262,7 @@ namespace SignalRSwaggerGen
 			return hubName.Split('`')[0];
 		}
 
-		private string GetTag(Type hub, SignalRHubAttribute hubAttribute, MemberElement hubXml)
+		private string GetHubTag(Type hub, SignalRHubAttribute hubAttribute, MemberElement hubXml)
 		{
 			if (hubAttribute.Tag != null) return hubAttribute.Tag;
 			if (!hubAttribute.XmlCommentsDisabled
@@ -272,6 +280,11 @@ namespace SignalRSwaggerGen
 			var nameTransformer = hubAttribute.NameTransformer ?? _options.NameTransformer;
 			if (nameTransformer != null) methodName = nameTransformer.Transform(methodName);
 			return $"{hubPath}/{methodName}{methodPathSuffix}";
+		}
+
+		private static string GetMethodTag(string hubTag, SignalRMethodAttribute methodAttribute)
+		{
+			return methodAttribute?.Tag ?? hubTag;
 		}
 
 		private Operation GetOperation(SignalRMethodAttribute methodAttribute)

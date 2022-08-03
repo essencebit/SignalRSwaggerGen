@@ -26,7 +26,7 @@ namespace TestWebApi.Hubs
 
 		[return: SignalRReturn(typeof(Task<WeatherForecast>), 200, "Success")]
 		[return: SignalRReturn(returnType: typeof(ValueTask<>), statusCode: 201, description: "Created")]
-		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Params)]
+		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Params, tag: "Special")]
 		public void TestMethod2(
 			[SignalRParam(description: "arg1 description")] int agr1,
 			[SignalRParam(description: "arg2 description")] string arg2,

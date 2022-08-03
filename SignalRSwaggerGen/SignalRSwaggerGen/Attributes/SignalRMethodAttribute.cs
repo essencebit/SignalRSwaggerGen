@@ -17,6 +17,7 @@ namespace SignalRSwaggerGen.Attributes
 		public AutoDiscover AutoDiscover { get; }
 		public string Summary { get; }
 		public string Description { get; }
+		public string Tag { get; }
 
 		/// <param name="name">Name of the method which will be invoked on the client side.
 		/// If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
@@ -26,6 +27,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
 		/// If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
 		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
+		/// <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
 		/// <exception cref="ArgumentException">Thrown if
 		/// - <paramref name="name"/> is null or empty
 		/// - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
@@ -34,7 +36,8 @@ namespace SignalRSwaggerGen.Attributes
 			Operation operation = Operation.Inherit,
 			AutoDiscover autoDiscover = AutoDiscover.Inherit,
 			string summary = null,
-			string description = null)
+			string description = null,
+			string tag = null)
 		{
 			if (name.IsNullOrEmpty()) throw new ArgumentException("Name is null or empty", nameof(name));
 			if (!_validAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
@@ -43,6 +46,7 @@ namespace SignalRSwaggerGen.Attributes
 			AutoDiscover = autoDiscover;
 			Summary = summary;
 			Description = description;
+			Tag = tag;
 		}
 
 		private static readonly IEnumerable<AutoDiscover> _validAutoDiscoverValues = new List<AutoDiscover>
