@@ -16,6 +16,13 @@ namespace TestWebApi.Controllers
 			return default;
 		}
 
+		/// <summary>
+		/// Summary
+		/// </summary>
+		/// <remarks>Remarks</remarks>
+		/// <example>Example</example>
+		/// <param name="body"></param>
+		/// <returns></returns>
 		[HttpPost]
 		public int Post([FromBody] WeatherForecast body)
 		{

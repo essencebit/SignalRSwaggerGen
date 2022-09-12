@@ -4,6 +4,15 @@
         <name>TestWebApi</name>
     </assembly>
     <members>
+        <member name="M:TestWebApi.Controllers.TestController.Post(TestWebApi.WeatherForecast)">
+            <summary>
+            Summary
+            </summary>
+            <remarks>Remarks</remarks>
+            <example>Example</example>
+            <param name="body" example="Example"></param>
+            <returns></returns>
+        </member>
         <member name="T:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2">
             <summary>
             xml commented hub
@@ -15,6 +24,7 @@
             <summary>
             xml commented method1 summary
             </summary>
+            <remarks>Some remarks1</remarks>
             <typeparam name="TA1"></typeparam>
             <typeparam name="TA2"></typeparam>
             <param name="arg1">xml commented arg1 description</param>
@@ -34,6 +44,7 @@
             <summary>
             xml commented method3 summary
             </summary>
+            <remarks>Some remarks3</remarks>
         </member>
     </members>
 </doc>

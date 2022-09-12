@@ -36,6 +36,9 @@ namespace SignalRSwaggerGen.Utils.XmlComments
 
 		[XmlElement("param")]
 		public List<ParamElement> Params { get; set; } = new List<ParamElement>();
+
+		[XmlElement("remarks")]
+		public MemberRemarksElement Remarks { get; set; }
 	}
 
 	public class MemberSummaryElement
@@ -49,6 +52,12 @@ namespace SignalRSwaggerGen.Utils.XmlComments
 		[XmlAttribute("name")]
 		public string Name { get; set; }
 
+		[XmlText]
+		public string Text { get; set; }
+	}
+
+	public class MemberRemarksElement
+	{
 		[XmlText]
 		public string Text { get; set; }
 	}

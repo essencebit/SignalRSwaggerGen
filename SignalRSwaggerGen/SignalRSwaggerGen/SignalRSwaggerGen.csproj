@@ -10,11 +10,11 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>3.3.0</Version>
-    <PackageReleaseNotes>Added the possibility to specify tags for hub methods(tag parameter for SignalRMethodAttribute)</PackageReleaseNotes>
-    <AssemblyVersion>3.3.0.0</AssemblyVersion>
+    <Version>3.4.0</Version>
+    <PackageReleaseNotes>Added support for remarks from XML comments</PackageReleaseNotes>
+    <AssemblyVersion>3.4.0.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>3.3.0.0</FileVersion>
+    <FileVersion>3.4.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageIconUrl />

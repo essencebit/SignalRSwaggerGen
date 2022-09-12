@@ -71,7 +71,7 @@ namespace SignalRSwaggerGen
 			var methodReturnParam = method.ReturnParameter;
 			var operation = GetOperation(methodAttribute);
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
-			var description = methodAttribute?.Description;
+			var description = GetMethodDescription(hubAttribute, methodAttribute, methodXml);
 			var methodTag = GetMethodTag(hubTag, methodAttribute);
 			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
 		}
@@ -365,6 +365,14 @@ namespace SignalRSwaggerGen
 			if (summary != null) return summary;
 			if (!hubAttribute.XmlCommentsDisabled) summary = methodXml?.Summary?.Text;
 			return summary;
+		}
+
+		private static string GetMethodDescription(SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute, MemberElement methodXml)
+		{
+			var description = methodAttribute?.Description;
+			if (description != null) return description;
+			if (!hubAttribute.XmlCommentsDisabled) description = methodXml?.Remarks?.Text;
+			return description;
 		}
 
 		private static string GetParamDescription(SignalRHubAttribute hubAttribute, SignalRParamAttribute paramAttribute, ParamElement paramXml)

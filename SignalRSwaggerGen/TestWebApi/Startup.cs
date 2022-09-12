@@ -26,7 +26,7 @@ namespace TestWebApi
 				options.SwaggerDoc("controllers", apiInfo);
 				options.SwaggerDoc("hubs", apiInfo);
 				options.IncludeXmlComments("TestWebApi.xml", true);
-				options.AddSignalRSwaggerGen();
+				options.AddSignalRSwaggerGen(o => o.UseXmlComments("TestWebApi.xml"));
 			});
 		}
 

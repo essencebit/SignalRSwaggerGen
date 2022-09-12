@@ -34,6 +34,7 @@ namespace TestWebApi.Hubs
 					/// <summary>
 					/// xml commented method1 summary
 					/// </summary>
+					/// <remarks>Some remarks1</remarks>
 					/// <typeparam name="TA1"></typeparam>
 					/// <typeparam name="TA2"></typeparam>
 					/// <param name="arg1">xml commented arg1 description</param>
@@ -63,6 +64,7 @@ namespace TestWebApi.Hubs
 					/// <summary>
 					/// xml commented method3 summary
 					/// </summary>
+					/// <remarks>Some remarks3</remarks>
 					public void Method3()
 					{
 						return;
