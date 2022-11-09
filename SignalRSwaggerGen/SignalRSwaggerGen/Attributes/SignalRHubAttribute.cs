@@ -20,20 +20,20 @@ namespace SignalRSwaggerGen.Attributes
 		public bool XmlCommentsDisabled { get; }
 
 		/// <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
-		/// If not specified, the func from 'SignalRSwaggerGenOptions' will be used to get the path.</param>
+		/// If not specified, the func from <see cref="SignalRSwaggerGenOptions"/> will be used to get the path.</param>
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
-		/// If 'AutoDiscover.Inherit' specified, the value from 'SignalRSwaggerGenOptions' will be used.</param>
+		/// If <see cref="AutoDiscover.Inherit"/> specified, the value from <see cref="SignalRSwaggerGenOptions"/> will be used.</param>
 		/// <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
-		/// If null specified, then the value from 'SignalRSwaggerGenOptions' will be used. If empty array specified, then the hub will be displayed in all documents.</param>
-		/// <param name="nameTransformerType">The type of the name transformer. The type must inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class, be non-abstract and have public parameterless constructor.
-		/// The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from 'SignalRSwaggerGenOptions' will be used.
-		/// The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.</param>
+		/// If null specified, then the value from <see cref="SignalRSwaggerGenOptions"/> will be used. If empty array specified, then the hub will be displayed in all documents.</param>
+		/// <param name="nameTransformerType">The type of the name transformer. The type must inherit from <see cref="Naming.NameTransformer"/> class, be non-abstract and have public parameterless constructor.
+		/// The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from <see cref="SignalRSwaggerGenOptions"/> will be used.
+		/// The namespace <see cref="SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.</param>
 		/// <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
 		/// If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
 		/// <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
 		/// <exception cref="ArgumentException">Thrown if
 		/// - <paramref name="autoDiscover"/> value not allowed for this attribute
-		/// - <paramref name="nameTransformerType"/> is abstract or does not inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class or has no public parameterless constructor</exception>
+		/// - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
 		public SignalRHubAttribute(
 			string path = null,
 			AutoDiscover autoDiscover = AutoDiscover.Inherit,

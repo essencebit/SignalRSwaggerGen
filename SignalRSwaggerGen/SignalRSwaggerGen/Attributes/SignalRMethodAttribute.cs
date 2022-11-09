@@ -21,9 +21,9 @@ namespace SignalRSwaggerGen.Attributes
 
 		/// <param name="name">Name of the method which will be invoked on the client side.
 		/// If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
-		/// <param name="operation">Same as HTTP verb. If 'Operation.Inherit' specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+		/// <param name="operation">Same as HTTP verb. If <see cref="Operation.Inherit"/> specified, then the value from <see cref="SignalRSwaggerGenOptions"/> will be used.</param>
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
-		/// If 'AutoDiscover.Inherit' specified, the value from the hub will be used. If the hub also has this value specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+		/// If <see cref="AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from <see cref="SignalRSwaggerGenOptions"/> will be used.</param>
 		/// <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
 		/// If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
 		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>

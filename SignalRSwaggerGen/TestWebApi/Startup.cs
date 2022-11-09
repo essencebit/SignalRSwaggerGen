@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace TestWebApi
 {
@@ -26,7 +28,47 @@ namespace TestWebApi
 				options.SwaggerDoc("controllers", apiInfo);
 				options.SwaggerDoc("hubs", apiInfo);
 				options.IncludeXmlComments("TestWebApi.xml", true);
-				options.AddSignalRSwaggerGen(o => o.UseXmlComments("TestWebApi.xml"));
+
+				var securityScheme = new OpenApiSecurityScheme
+				{
+					In = ParameterLocation.Header,
+					Description = "Please enter a valid token",
+					Name = "Authorization",
+					Type = SecuritySchemeType.Http,
+					BearerFormat = "JWT",
+					Scheme = JwtBearerDefaults.AuthenticationScheme
+				};
+				var securityScheme2 = new OpenApiSecurityScheme
+				{
+					In = ParameterLocation.Header,
+					Description = "Please enter a valid token",
+					Name = "Authorization",
+					Type = SecuritySchemeType.Http,
+					BearerFormat = "JWT",
+					Scheme = "Basic"
+				};
+				options.AddSecurityDefinition(securityScheme.Scheme, securityScheme);
+				options.AddSecurityDefinition(securityScheme2.Scheme, securityScheme2);
+				options.AddSecurityRequirement(new OpenApiSecurityRequirement
+				{
+					{
+						new OpenApiSecurityScheme
+						{
+							Reference = new OpenApiReference
+							{
+								Type = ReferenceType.SecurityScheme,
+								Id = securityScheme.Scheme,
+							}
+						},
+						Array.Empty<string>()
+					}
+				});
+
+				options.AddSignalRSwaggerGen(o =>
+				{
+					o.UseXmlComments("TestWebApi.xml");
+					o.DisregardOtherSecurityRequirements = true;
+				});
 			});
 		}
 
@@ -35,25 +77,23 @@ namespace TestWebApi
 		{
 			if (env.IsDevelopment())
 			{
-				app.UseDeveloperExceptionPage();
-				app.UseSwagger();
-				app.UseSwaggerUI(options =>
-				{
-					options.SwaggerEndpoint("/swagger/controllers/swagger.json", "REST API");
-					options.SwaggerEndpoint("/swagger/hubs/swagger.json", "SignalR");
-				});
+				app.UseDeveloperExceptionPage()
+					.UseSwagger()
+					.UseSwaggerUI(options =>
+					{
+						options.SwaggerEndpoint("/swagger/controllers/swagger.json", "REST API");
+						options.SwaggerEndpoint("/swagger/hubs/swagger.json", "SignalR");
+					});
 			}
 
-			app.UseHttpsRedirection();
-
-			app.UseRouting();
-
-			app.UseAuthorization();
-
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-			});
+			app.UseHttpsRedirection()
+				.UseRouting()
+				.UseAuthentication()
+				.UseAuthorization()
+				.UseEndpoints(endpoints =>
+				{
+					endpoints.MapControllers();
+				});
 		}
 	}
 }

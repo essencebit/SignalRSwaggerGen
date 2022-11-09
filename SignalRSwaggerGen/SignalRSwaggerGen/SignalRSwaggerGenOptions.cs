@@ -1,4 +1,6 @@
-﻿using SignalRSwaggerGen.Enums;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.OpenApi.Models;
+using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Naming;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,7 @@ namespace SignalRSwaggerGen
 	{
 		/// <summary>
 		/// The func that will get the hub name and return the path for the hub. The func will be skipped for the hubs that have a not null path specified for them in particular.
-		/// If the func not specified explicitly, the default func will return a value based on the template 'Constants.DefaultHubPathTemplate'.
+		/// If the func not specified explicitly, the default func will return a value based on the template <see cref="Constants.DefaultHubPathTemplate"/>.
 		/// If you decide to set a custom func, make sure the func will return a different path for each hub.
 		/// </summary>
 		/// <example>hubName => $"hubs/are/here/{hubName}"</example>
@@ -32,9 +34,9 @@ namespace SignalRSwaggerGen
 		/// <summary>
 		/// A flag indicating what components will have Swagger documentation enabled automatically.
 		/// Can be overridden for a specific component by specifying auto-discover value for that component in particular.
-		/// If not specified explicitly, the default value is 'Constants.DefaultAutoDiscover'.
+		/// If not specified explicitly, the default value is <see cref="Constants.DefaultAutoDiscover"/>.
 		/// </summary>
-		/// <exception cref="ArgumentException">Thrown if the value is 'AutoDiscover.Inherit', since there's no other higher level configuration to inherit from</exception>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
 		public AutoDiscover AutoDiscover
 		{
 			get => _autoDiscover;
@@ -47,9 +49,9 @@ namespace SignalRSwaggerGen
 
 		/// <summary>
 		/// Same as HTTP verb. Can be overridden for a specific method by specifying the operation for that method in particular.
-		/// If not specified explicitly, the default value is 'Constants.DefaultOperation'.
+		/// If not specified explicitly, the default value is <see cref="Constants.DefaultOperation"/>.
 		/// </summary>
-		/// <exception cref="ArgumentException">Thrown if the value is 'Operation.Inherit', since there's no other higher level configuration to inherit from</exception>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="Operation.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
 		public Operation Operation
 		{
 			get => _operation;
@@ -63,7 +65,7 @@ namespace SignalRSwaggerGen
 		/// <summary>
 		/// The name transformer that will be used to transform the name of the hubs and their methods.
 		/// Can be overridden for a specific component by specifying a transformer for that component in particular.
-		/// If not specified at any level, no transformation will happen. The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.
+		/// If not specified at any level, no transformation will happen. The namespace <see cref="SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.
 		/// </summary>
 		/// <exception cref="ArgumentNullException">Thrown if the value is null</exception>
 		public NameTransformer NameTransformer
@@ -226,9 +228,69 @@ namespace SignalRSwaggerGen
 			}
 		}
 
+		/// <summary>
+		/// Specify a security requirement to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirement">Security requirement</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirement"/> is null</exception>
+		public void AddSecurityRequirement(OpenApiSecurityRequirement securityRequirement)
+		{
+			if (securityRequirement == null) throw new ArgumentNullException(nameof(securityRequirement));
+			SecurityRequirements.Add(securityRequirement);
+		}
+
+		/// <summary>
+		/// Specify a list of security requirements to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirements">Security requirements</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+		public void AddSecurityRequirements(IEnumerable<OpenApiSecurityRequirement> securityRequirements)
+		{
+			if (securityRequirements == null) throw new ArgumentNullException(nameof(securityRequirements));
+			if (!securityRequirements.Any()) throw new ArgumentException("Empty", nameof(securityRequirements));
+			foreach (var securityRequirement in securityRequirements)
+			{
+				SecurityRequirements.Add(securityRequirement);
+			}
+		}
+
+		/// <summary>
+		/// Specify a list of security requirements to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirements">Security requirements</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+		public void AddSecurityRequirements(params OpenApiSecurityRequirement[] securityRequirements)
+		{
+			if (securityRequirements == null) throw new ArgumentNullException(nameof(securityRequirements));
+			if (!securityRequirements.Any()) throw new ArgumentException("Empty", nameof(securityRequirements));
+			foreach (var securityRequirement in securityRequirements)
+			{
+				SecurityRequirements.Add(securityRequirement);
+			}
+		}
+
+		/// <summary>
+		/// Disregard security requirements not added via <see cref="SignalRSwaggerGenOptions"/>
+		/// </summary>
+		public bool DisregardOtherSecurityRequirements { get; set; }
+
+		/// <summary>
+		/// Disable security for all hubs
+		/// </summary>
+		public bool DisableSecurity { get; set; }
+
 		internal HashSet<Assembly> Assemblies { get; } = new HashSet<Assembly>();
 		internal HashSet<string> PathsToXmlCommentsFiles { get; } = new HashSet<string>();
 		internal HashSet<string> DocumentNames { get; } = new HashSet<string>();
+		internal HashSet<OpenApiSecurityRequirement> SecurityRequirements { get; } = new HashSet<OpenApiSecurityRequirement>();
 
 		private Func<string, string> _hubPathFunc = hubName => Constants.DefaultHubPathTemplate.Replace(Constants.HubNamePlaceholder, hubName);
 		private AutoDiscover _autoDiscover = Constants.DefaultAutoDiscover;

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TestWebApi.Hubs
 {
-	[Authorize]
+	[Authorize(AuthenticationSchemes = "Basic")]
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" }, nameTransformerType: typeof(ToLowerTransformer))]
 	public class TestHub : Hub
 	{
@@ -24,6 +24,7 @@ namespace TestWebApi.Hubs
 			return default;
 		}
 
+		[Authorize(AuthenticationSchemes = "Basic, Bearer")]
 		[return: SignalRReturn(typeof(Task<WeatherForecast>), 200, "Success")]
 		[return: SignalRReturn(returnType: typeof(ValueTask<>), statusCode: 201, description: "Created")]
 		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Params, tag: "Special")]
@@ -47,6 +48,7 @@ namespace TestWebApi.Hubs
 			return default;
 		}
 
+		[Authorize]
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3()
 		{

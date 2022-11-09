@@ -10,7 +10,7 @@
             </summary>
             <remarks>Remarks</remarks>
             <example>Example</example>
-            <param name="body" example="Example"></param>
+            <param name="body"></param>
             <returns></returns>
         </member>
         <member name="T:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2">

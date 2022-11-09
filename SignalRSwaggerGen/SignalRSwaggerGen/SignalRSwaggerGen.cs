@@ -76,7 +76,7 @@ namespace SignalRSwaggerGen
 			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
 		}
 
-		private static void AddOpenApiPath(
+		private void AddOpenApiPath(
 			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			Type hub,
@@ -119,32 +119,44 @@ namespace SignalRSwaggerGen
 			return new List<OpenApiTag> { new OpenApiTag { Name = tag } };
 		}
 
-		private static IList<OpenApiSecurityRequirement> GetSecurity(Type hub, MethodInfo method)
+		private IList<OpenApiSecurityRequirement> GetSecurity(Type hub, MethodInfo method)
 		{
-			var securityEnabled =
-				hub.GetCustomAttribute<AuthorizeAttribute>() != null
-				&& method.GetCustomAttribute<AllowAnonymousAttribute>() == null
-				|| method.GetCustomAttribute<AuthorizeAttribute>() != null;
+			if (_options.DisableSecurity
+				|| hub.GetCustomAttribute<AllowAnonymousAttribute>() != null
+				|| method.GetCustomAttribute<AllowAnonymousAttribute>() != null)
+				return new List<OpenApiSecurityRequirement> { new OpenApiSecurityRequirement() };
 
-			return securityEnabled
-				? new List<OpenApiSecurityRequirement>
+			var authorizeAttribute = method.GetCustomAttribute<AuthorizeAttribute>()
+				?? hub.GetCustomAttribute<AuthorizeAttribute>();
+
+			var securitySchemes = authorizeAttribute
+				?.AuthenticationSchemes
+				?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+				.Select(x => new OpenApiSecurityScheme
 				{
-					new OpenApiSecurityRequirement
+					Reference = new OpenApiReference
 					{
-						{
-							new OpenApiSecurityScheme
-							{
-								Reference = new OpenApiReference
-								{
-									Type = ReferenceType.SecurityScheme,
-									Id = "basic",
-								}
-							},
-							Array.Empty<string>()
-						}
-					}
-				}
-				: null;
+						Type = ReferenceType.SecurityScheme,
+						Id = x.Trim(),
+					},
+				})
+				.ToList()
+				?? Enumerable.Empty<OpenApiSecurityScheme>();
+
+			if (!securitySchemes.Any())
+				return _options.SecurityRequirements.Any()
+					? _options.SecurityRequirements.ToList()
+					: _options.DisregardOtherSecurityRequirements
+						? new List<OpenApiSecurityRequirement> { new OpenApiSecurityRequirement() }
+						: null;
+
+			var securityRequirement = new OpenApiSecurityRequirement();
+			foreach (var securityScheme in securitySchemes)
+			{
+				securityRequirement.Add(securityScheme, Array.Empty<string>());
+			}
+
+			return new List<OpenApiSecurityRequirement> { securityRequirement };
 		}
 
 		private static IList<OpenApiParameter> ToOpenApiParameters(

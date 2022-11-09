@@ -8,8 +8,6 @@ namespace TestWebApi.Controllers
 	[Route("[controller]")]
 	public class TestController : ControllerBase
 	{
-		[ProducesResponseType(typeof(int), 200)]
-		[ProducesResponseType(typeof(string), 400)]
 		[HttpGet]
 		public IEnumerable<WeatherForecast> Get()
 		{

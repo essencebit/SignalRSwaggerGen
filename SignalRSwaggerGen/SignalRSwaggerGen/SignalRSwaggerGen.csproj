@@ -7,14 +7,16 @@
     <Authors>Dorin Mocan</Authors>
     <Company></Company>
     <Description>This package can be used to generate Swagger documentation for SignalR hubs.</Description>
-    <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface</PackageTags>
+    <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation</PackageTags>
     <PackageProjectUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Dorin-Mocan/SignalRSwaggerGen</RepositoryUrl>
-    <Version>3.4.0</Version>
-    <PackageReleaseNotes>Added support for remarks from XML comments</PackageReleaseNotes>
-    <AssemblyVersion>3.4.0.0</AssemblyVersion>
+    <Version>3.5.0</Version>
+    <PackageReleaseNotes>Added support for security schemas and requirements
+Bugfixing
+Enhanced documentation</PackageReleaseNotes>
+    <AssemblyVersion>3.5.0.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>3.4.0.0</FileVersion>
+    <FileVersion>3.5.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageIconUrl />

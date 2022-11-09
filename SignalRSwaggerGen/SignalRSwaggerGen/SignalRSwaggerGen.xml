@@ -16,20 +16,20 @@
         </member>
         <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean)">
             <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
-            If not specified, the func from 'SignalRSwaggerGenOptions' will be used to get the path.</param>
+            If not specified, the func from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used to get the path.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
-            If 'AutoDiscover.Inherit' specified, the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>
             <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
-            If null specified, then the value from 'SignalRSwaggerGenOptions' will be used. If empty array specified, then the hub will be displayed in all documents.</param>
-            <param name="nameTransformerType">The type of the name transformer. The type must inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class, be non-abstract and have public parameterless constructor.
-            The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from 'SignalRSwaggerGenOptions' will be used.
-            The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.</param>
+            If null specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used. If empty array specified, then the hub will be displayed in all documents.</param>
+            <param name="nameTransformerType">The type of the name transformer. The type must inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class, be non-abstract and have public parameterless constructor.
+            The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.
+            The namespace <see cref="!:SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.</param>
             <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
             If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
             <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
             <exception cref="T:System.ArgumentException">Thrown if
             - <paramref name="autoDiscover"/> value not allowed for this attribute
-            - <paramref name="nameTransformerType"/> is abstract or does not inherit from 'SignalRSwaggerGen.Naming.NameTransformer' class or has no public parameterless constructor</exception>
+            - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
             <summary>
@@ -39,9 +39,9 @@
         <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String,System.String)">
             <param name="name">Name of the method which will be invoked on the client side.
             If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
-            <param name="operation">Same as HTTP verb. If 'Operation.Inherit' specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            <param name="operation">Same as HTTP verb. If <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/> specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
-            If 'AutoDiscover.Inherit' specified, the value from the hub will be used. If the hub also has this value specified, then the value from 'SignalRSwaggerGenOptions' will be used.</param>
+            If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>
             <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
             If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
             <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
@@ -161,7 +161,7 @@
         <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.HubPathFunc">
             <summary>
             The func that will get the hub name and return the path for the hub. The func will be skipped for the hubs that have a not null path specified for them in particular.
-            If the func not specified explicitly, the default func will return a value based on the template 'Constants.DefaultHubPathTemplate'.
+            If the func not specified explicitly, the default func will return a value based on the template <see cref="F:SignalRSwaggerGen.Constants.DefaultHubPathTemplate"/>.
             If you decide to set a custom func, make sure the func will return a different path for each hub.
             </summary>
             <example>hubName => $"hubs/are/here/{hubName}"</example>
@@ -171,22 +171,22 @@
             <summary>
             A flag indicating what components will have Swagger documentation enabled automatically.
             Can be overridden for a specific component by specifying auto-discover value for that component in particular.
-            If not specified explicitly, the default value is 'Constants.DefaultAutoDiscover'.
+            If not specified explicitly, the default value is <see cref="F:SignalRSwaggerGen.Constants.DefaultAutoDiscover"/>.
             </summary>
-            <exception cref="T:System.ArgumentException">Thrown if the value is 'AutoDiscover.Inherit', since there's no other higher level configuration to inherit from</exception>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
         </member>
         <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.Operation">
             <summary>
             Same as HTTP verb. Can be overridden for a specific method by specifying the operation for that method in particular.
-            If not specified explicitly, the default value is 'Constants.DefaultOperation'.
+            If not specified explicitly, the default value is <see cref="F:SignalRSwaggerGen.Constants.DefaultOperation"/>.
             </summary>
-            <exception cref="T:System.ArgumentException">Thrown if the value is 'Operation.Inherit', since there's no other higher level configuration to inherit from</exception>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
         </member>
         <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.NameTransformer">
             <summary>
             The name transformer that will be used to transform the name of the hubs and their methods.
             Can be overridden for a specific component by specifying a transformer for that component in particular.
-            If not specified at any level, no transformation will happen. The namespace 'SignalRSwaggerGen.Naming' already contains some predefined name transformers, so check 'em out.
+            If not specified at any level, no transformation will happen. The namespace <see cref="!:SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.
             </summary>
             <exception cref="T:System.ArgumentNullException">Thrown if the value is null</exception>
         </member>
@@ -279,6 +279,45 @@
             <param name="paths">Paths to the files that contain XML comments</param>
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
             <exception cref="T:System.ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddSecurityRequirement(Microsoft.OpenApi.Models.OpenApiSecurityRequirement)">
+            <summary>
+            Specify a security requirement to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirement">Security requirement</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirement"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddSecurityRequirements(System.Collections.Generic.IEnumerable{Microsoft.OpenApi.Models.OpenApiSecurityRequirement})">
+            <summary>
+            Specify a list of security requirements to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirements">Security requirements</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddSecurityRequirements(Microsoft.OpenApi.Models.OpenApiSecurityRequirement[])">
+            <summary>
+            Specify a list of security requirements to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirements">Security requirements</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisregardOtherSecurityRequirements">
+            <summary>
+            Disregard security requirements not added via <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/>
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisableSecurity">
+            <summary>
+            Disable security for all hubs
+            </summary>
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions.AddSignalRSwaggerGen(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
             <summary>
