@@ -226,7 +226,13 @@ namespace SignalRSwaggerGen
 		{
 			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema))
 			{
-				schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+				// invoke via reflection to bypass breaking change in 6.3.0 and above
+				var method = context.SchemaGenerator.GetType().GetMethod(nameof(context.SchemaGenerator.GenerateSchema), BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Instance);
+				var paramsCount = method.GetParameters().Length;
+				var args = new object[paramsCount];
+				args[0] = type;
+				args[1] = context.SchemaRepository;
+				schema = (OpenApiSchema)method.Invoke(context.SchemaGenerator, args);
 			}
 			return schema.Reference == null
 				? schema
