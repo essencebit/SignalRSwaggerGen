@@ -18,7 +18,7 @@ namespace TestWebApi.Hubs
 		public ValueTask TestMethod(
 			int agr1,
 			string arg2,
-			[SignalRParam(description: "arg3 description")] WeatherForecast arg3,
+			[SignalRParam(description: "arg3 description", deprecated: true)] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken)
 		{
 			return default;

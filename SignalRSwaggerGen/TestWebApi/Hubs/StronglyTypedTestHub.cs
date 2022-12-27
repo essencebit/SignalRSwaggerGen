@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -28,6 +29,7 @@ namespace TestWebApi.Hubs
 			[SignalRParam(description: "arg3 description")] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken);
 
+		[Obsolete]
 		[return: SignalRReturn(typeof(Task<WeatherForecast>), 200, "Success")]
 		[return: SignalRReturn(returnType: typeof(ValueTask<>), statusCode: 201, description: "Created")]
 		[SignalRMethod(summary: "method2 summary", description: "method2 description", autoDiscover: AutoDiscover.Params)]

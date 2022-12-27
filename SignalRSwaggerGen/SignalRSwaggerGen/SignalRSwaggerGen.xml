@@ -14,7 +14,7 @@
             Use this attribute to enable Swagger documentation for hubs
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean,System.Boolean)">
             <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
             If not specified, the func from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used to get the path.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
@@ -27,6 +27,7 @@
             <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
             If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
             <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
+            <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger document</param>
             <exception cref="T:System.ArgumentException">Thrown if
             - <paramref name="autoDiscover"/> value not allowed for this attribute
             - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
@@ -36,7 +37,7 @@
             Use this attribute to enable Swagger documentation for hub methods
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String,System.String)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String,System.String,System.Boolean)">
             <param name="name">Name of the method which will be invoked on the client side.
             If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
             <param name="operation">Same as HTTP verb. If <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/> specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>
@@ -46,6 +47,7 @@
             If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
             <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
             <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
+            <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger document</param>
             <exception cref="T:System.ArgumentException">Thrown if
             - <paramref name="name"/> is null or empty
             - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
@@ -55,9 +57,10 @@
             Use this attribute to enable Swagger documentation for method params
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type,System.Boolean)">
             <param name="description">The text that will appear in description section of decorated parameter in Swagger document</param>
             <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
+            <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger document</param>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRRequestBodyAttribute">
             <summary>

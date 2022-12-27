@@ -10,13 +10,16 @@ namespace SignalRSwaggerGen.Attributes
 	{
 		public string Description { get; }
 		public Type ParamType { get; }
+		public bool Deprecated { get; }
 
 		/// <param name="description">The text that will appear in description section of decorated parameter in Swagger document</param>
 		/// <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
-		public SignalRParamAttribute(string description = null, Type paramType = null)
+		/// <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger document</param>
+		public SignalRParamAttribute(string description = null, Type paramType = null, bool deprecated = false)
 		{
 			Description = description;
 			ParamType = paramType;
+			Deprecated = deprecated;
 		}
 	}
 }

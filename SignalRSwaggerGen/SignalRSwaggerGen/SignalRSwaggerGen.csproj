@@ -10,11 +10,12 @@
     <PackageTags>swagger openapi open api swashbuckle swaggergen documentation signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
     <PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
     <RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-    <Version>3.7.0</Version>
-    <PackageReleaseNotes>Depend on a lower version of SwaggerGen -&gt; 6.0.0</PackageReleaseNotes>
-    <AssemblyVersion>3.7.0.0</AssemblyVersion>
+    <Version>3.8.0</Version>
+    <PackageReleaseNotes>1. Added support for ObsoleteAttribute
+2. Added 'deprecated' param for hub, method and param attributes</PackageReleaseNotes>
+    <AssemblyVersion>3.8.0.0</AssemblyVersion>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <FileVersion>3.7.0.0</FileVersion>
+    <FileVersion>3.8.0.0</FileVersion>
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageIcon>Logo.png</PackageIcon>
     <PackageIconUrl />

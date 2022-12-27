@@ -73,7 +73,7 @@ namespace SignalRSwaggerGen
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
 			var description = GetMethodDescription(hubAttribute, methodAttribute, methodXml);
 			var methodTag = GetMethodTag(hubTag, methodAttribute);
-			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodXml);
+			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodAttribute, methodXml);
 		}
 
 		private void AddOpenApiPath(
@@ -89,6 +89,7 @@ namespace SignalRSwaggerGen
 			IEnumerable<ParameterInfo> methodParams,
 			ParameterInfo methodReturnParam,
 			MethodInfo method,
+			SignalRMethodAttribute methodAttribute,
 			MemberElement methodXml)
 		{
 			swaggerDoc.Paths.Add(
@@ -108,6 +109,7 @@ namespace SignalRSwaggerGen
 								Responses = ToOpenApiResponses(context, methodReturnParam),
 								RequestBody =  GetOpenApiRequestBody(context, method),
 								Security = GetSecurity(hub, method),
+								Deprecated = MethodIsDeprecated(hub, hubAttribute, method, methodAttribute),
 							}
 						}
 					}
@@ -172,12 +174,14 @@ namespace SignalRSwaggerGen
 					var paramAttribute = param.GetCustomAttribute<SignalRParamAttribute>();
 					var description = GetParamDescription(hubAttribute, paramAttribute, paramXml);
 					var type = paramAttribute?.ParamType ?? param.ParameterType;
+					bool deprecated = ParameterIsDeprecated(param, paramAttribute);
 					return new OpenApiParameter
 					{
 						Name = param.Name,
 						In = ParameterLocation.Query,
 						Description = description,
 						Schema = GetOpenApiSchema(context, type),
+						Deprecated = deprecated,
 					};
 				})
 				.ToList();
@@ -220,6 +224,24 @@ namespace SignalRSwaggerGen
 				Description = requestBodyAttribute.Description,
 				Content = GetContentByMediaType(mediaType)
 			};
+		}
+
+		private static bool MethodIsDeprecated(
+			Type hub,
+			SignalRHubAttribute hubAttribute,
+			MethodInfo method,
+			SignalRMethodAttribute methodAttribute)
+		{
+			return hub.GetCustomAttribute<ObsoleteAttribute>() != null
+				|| method.GetCustomAttribute<ObsoleteAttribute>() != null
+				|| (hubAttribute?.Deprecated ?? false)
+				|| (methodAttribute?.Deprecated ?? false);
+		}
+
+		private static bool ParameterIsDeprecated(ParameterInfo param, SignalRParamAttribute paramAttribute)
+		{
+			return param.GetCustomAttribute<ObsoleteAttribute>() != null
+				|| (paramAttribute?.Deprecated ?? false);
 		}
 
 		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)

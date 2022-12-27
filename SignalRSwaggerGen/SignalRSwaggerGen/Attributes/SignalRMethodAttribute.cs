@@ -18,6 +18,7 @@ namespace SignalRSwaggerGen.Attributes
 		public string Summary { get; }
 		public string Description { get; }
 		public string Tag { get; }
+		public bool Deprecated { get; }
 
 		/// <param name="name">Name of the method which will be invoked on the client side.
 		/// If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
@@ -28,6 +29,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
 		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
 		/// <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
+		/// <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger document</param>
 		/// <exception cref="ArgumentException">Thrown if
 		/// - <paramref name="name"/> is null or empty
 		/// - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
@@ -37,7 +39,8 @@ namespace SignalRSwaggerGen.Attributes
 			AutoDiscover autoDiscover = AutoDiscover.Inherit,
 			string summary = null,
 			string description = null,
-			string tag = null)
+			string tag = null,
+			bool deprecated = false)
 		{
 			if (name.IsNullOrEmpty()) throw new ArgumentException("Name is null or empty", nameof(name));
 			if (!_validAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
@@ -47,6 +50,7 @@ namespace SignalRSwaggerGen.Attributes
 			Summary = summary;
 			Description = description;
 			Tag = tag;
+			Deprecated = deprecated;
 		}
 
 		private static readonly IEnumerable<AutoDiscover> _validAutoDiscoverValues = new List<AutoDiscover>
