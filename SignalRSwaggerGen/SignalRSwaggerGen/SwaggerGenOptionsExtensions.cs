@@ -4,6 +4,9 @@ using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
+	/// <summary>
+	/// Extensions for SwaggerGenOptions
+	/// </summary>
 	public static class SwaggerGenOptionsExtensions
 	{
 		/// <summary>
@@ -21,6 +24,7 @@ namespace Microsoft.Extensions.DependencyInjection
 		/// </summary>
 		/// <param name="swaggerGenOptions">...</param>
 		/// <param name="action">Action for setting up options for SignalRSwaggerGen</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="action"/> is null</exception>
 		public static void AddSignalRSwaggerGen(this SwaggerGenOptions swaggerGenOptions, Action<SignalRSwaggerGenOptions> action)
 		{
 			if (action == null) throw new ArgumentNullException(nameof(action));

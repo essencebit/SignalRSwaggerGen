@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
@@ -40,7 +42,11 @@ namespace SignalRSwaggerGen
 			}
 		}
 
-		private void ProcessHub(OpenApiDocument swaggerDoc, DocumentFilterContext context, Type hub, XmlComments xmlComments)
+		private void ProcessHub(
+			OpenApiDocument swaggerDoc,
+			DocumentFilterContext context,
+			Type hub,
+			XmlComments xmlComments)
 		{
 			var hubAttribute = hub.GetCustomAttribute<SignalRHubAttribute>();
 			if (!HubShouldBeDisplayedOnDocument(context, hubAttribute)) return;
@@ -51,7 +57,15 @@ namespace SignalRSwaggerGen
 			foreach (var method in methods)
 			{
 				var methodXml = GetMethodXml(method, xmlComments);
-				ProcessMethod(swaggerDoc, context, hub, hubAttribute, hubPath, hubTag, method, methodXml);
+				ProcessMethod(
+					swaggerDoc,
+					context,
+					hub,
+					hubAttribute,
+					hubPath,
+					hubTag,
+					method,
+					methodXml);
 			}
 		}
 
@@ -69,11 +83,25 @@ namespace SignalRSwaggerGen
 			var methodPath = GetMethodPath(hubPath, method, hubAttribute, methodAttribute);
 			var methodParams = GetMethodParams(method, hubAttribute, methodAttribute);
 			var methodReturnParam = method.ReturnParameter;
-			var operation = GetOperation(methodAttribute);
+			var operationType = GetOperationType(methodAttribute);
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
 			var description = GetMethodDescription(hubAttribute, methodAttribute, methodXml);
 			var methodTag = GetMethodTag(hubTag, methodAttribute);
-			AddOpenApiPath(swaggerDoc, context, hub, hubAttribute, methodTag, methodPath, operation, summary, description, methodParams, methodReturnParam, method, methodAttribute, methodXml);
+			AddOpenApiPath(
+				swaggerDoc,
+				context,
+				hub,
+				hubAttribute,
+				methodTag,
+				methodPath,
+				operationType,
+				summary,
+				description,
+				methodParams,
+				methodReturnParam,
+				method,
+				methodAttribute,
+				methodXml);
 		}
 
 		private void AddOpenApiPath(
@@ -83,7 +111,7 @@ namespace SignalRSwaggerGen
 			SignalRHubAttribute hubAttribute,
 			string tag,
 			string methodPath,
-			Operation operation,
+			Operation operationType,
 			string summary,
 			string description,
 			IEnumerable<ParameterInfo> methodParams,
@@ -92,6 +120,17 @@ namespace SignalRSwaggerGen
 			SignalRMethodAttribute methodAttribute,
 			MemberElement methodXml)
 		{
+			var operation = new OpenApiOperation
+			{
+				Summary = summary,
+				Description = description,
+				Tags = ToOpenApiTags(tag),
+				Parameters = ToOpenApiParameters(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
+				RequestBody = GetOpenApiRequestBody(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
+				Responses = ToOpenApiResponses(context, methodReturnParam),
+				Security = GetSecurity(hub, method),
+				Deprecated = MethodIsDeprecated(hub, hubAttribute, method, methodAttribute),
+			};
 			swaggerDoc.Paths.Add(
 				methodPath,
 				new OpenApiPathItem
@@ -99,21 +138,13 @@ namespace SignalRSwaggerGen
 					Operations = new Dictionary<OperationType, OpenApiOperation>
 					{
 						{
-							(OperationType)operation,
-							new OpenApiOperation
-							{
-								Summary = summary,
-								Description = description,
-								Tags = ToOpenApiTags(tag),
-								Parameters = ToOpenApiParameters(context, hubAttribute, methodParams, methodXml),
-								Responses = ToOpenApiResponses(context, methodReturnParam),
-								RequestBody =  GetOpenApiRequestBody(context, method),
-								Security = GetSecurity(hub, method),
-								Deprecated = MethodIsDeprecated(hub, hubAttribute, method, methodAttribute),
-							}
+							(OperationType)operationType,
+							operation
 						}
 					}
 				});
+			var apiDescription = GetMethodApiDescription(tag, methodPath, operationType, summary, description);
+			ApplyOperationFilters(operation, context, method, apiDescription);
 		}
 
 		private static List<OpenApiTag> ToOpenApiTags(string tag)
@@ -161,30 +192,82 @@ namespace SignalRSwaggerGen
 			return new List<OpenApiSecurityRequirement> { securityRequirement };
 		}
 
-		private static IList<OpenApiParameter> ToOpenApiParameters(
+		private IList<OpenApiParameter> ToOpenApiParameters(
 			DocumentFilterContext context,
 			SignalRHubAttribute hubAttribute,
+			string tag,
+			string methodPath,
+			Operation operationType,
+			string methodSummary,
+			string methodDescription,
 			IEnumerable<ParameterInfo> parameters,
 			MemberElement methodXml)
 		{
 			return parameters
+				.Where(x =>
+					!x.IsFromBody()
+					&& !x.IsFromForm()
+					&& !GetParamType(x, x.GetCustomAttribute<SignalRParamAttribute>()).IsFormFile())
 				.Select(param =>
 				{
 					var paramXml = methodXml?.Params?.FirstOrDefault(x => x.Name == param.Name);
 					var paramAttribute = param.GetCustomAttribute<SignalRParamAttribute>();
-					var description = GetParamDescription(hubAttribute, paramAttribute, paramXml);
-					var type = paramAttribute?.ParamType ?? param.ParameterType;
-					bool deprecated = ParameterIsDeprecated(param, paramAttribute);
-					return new OpenApiParameter
+					var paramDescription = GetParamDescription(hubAttribute, paramAttribute, paramXml);
+					var paramType = GetParamType(param, paramAttribute);
+					var deprecated = ParamIsDeprecated(param, paramAttribute);
+					var parameter = new OpenApiParameter
 					{
 						Name = param.Name,
 						In = ParameterLocation.Query,
-						Description = description,
-						Schema = GetOpenApiSchema(context, type),
+						Description = paramDescription,
+						Schema = GetOpenApiSchema(context, paramType),
 						Deprecated = deprecated,
 					};
+					var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
+					ApplyParameterFilters(parameter, context, param, apiDescription);
+					return parameter;
 				})
 				.ToList();
+		}
+
+		private OpenApiRequestBody GetOpenApiRequestBody(
+			DocumentFilterContext context,
+			SignalRHubAttribute hubAttribute,
+			string tag,
+			string methodPath,
+			Operation operationType,
+			string methodSummary,
+			string methodDescription,
+			IEnumerable<ParameterInfo> parameters,
+			MemberElement methodXml)
+		{
+			var param = parameters.FirstOrDefault(x =>
+				x.IsFromBody()
+				|| x.IsFromForm()
+				|| GetParamType(x, x.GetCustomAttribute<SignalRParamAttribute>()).IsFormFile());
+
+			if (param == null) return null;
+
+			var paramXml = methodXml?.Params?.FirstOrDefault(x => x.Name == param.Name);
+			var paramAttribute = param.GetCustomAttribute<SignalRParamAttribute>();
+			var paramDescription = GetParamDescription(hubAttribute, paramAttribute, paramXml);
+			var paramType = GetParamType(param, paramAttribute);
+			var isFromForm = param.IsFromForm();
+			var isFormFile = paramType.IsFormFile();
+			var isFormData = isFromForm || isFormFile;
+
+			var schema = GetRequestBodyOpenApiSchema(context, param, paramType, isFromForm, isFormFile);
+			var mediaType = GetOpenApiMediaType(schema, param, isFromForm, isFormFile);
+			var requestBody = new OpenApiRequestBody
+			{
+				Description = paramDescription,
+				Content = GetContentByMediaType(mediaType, isFormData)
+			};
+
+			var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
+			ApplyRequestBodyFilters(requestBody, context, apiDescription);
+
+			return requestBody;
 		}
 
 		private static OpenApiResponses ToOpenApiResponses(DocumentFilterContext context, ParameterInfo returnParam)
@@ -195,35 +278,21 @@ namespace SignalRSwaggerGen
 			if (!returnAttributes.Any()) returnAttributes.Add(new SignalRReturnAttribute());
 			foreach (var returnAttribute in returnAttributes)
 			{
-				var type = returnAttribute.ReturnType ?? returnParam.ParameterType;
-				if (!TryGetReturnType(type, out type)) continue;
+				var responseType = returnAttribute.ReturnType ?? returnParam.ParameterType;
+				if (!TryGetReturnType(responseType, out responseType)) continue;
 				var mediaType = new OpenApiMediaType
 				{
-					Schema = GetOpenApiSchema(context, type)
+					Schema = GetOpenApiSchema(context, responseType)
 				};
-				responses.Add(returnAttribute.StatusCode.ToString(), new OpenApiResponse
-				{
-					Description = returnAttribute.Description,
-					Content = GetContentByMediaType(mediaType)
-				});
+				responses.Add(
+					returnAttribute.StatusCode.ToString(),
+					new OpenApiResponse
+					{
+						Description = returnAttribute.Description,
+						Content = GetContentByMediaType(mediaType, false)
+					});
 			}
 			return responses;
-		}
-
-		private static OpenApiRequestBody GetOpenApiRequestBody(DocumentFilterContext context, MethodInfo method)
-		{
-			var requestBodyAttribute = method.GetCustomAttribute<SignalRRequestBodyAttribute>();
-			if (requestBodyAttribute == null) return null;
-			var mediaType = new OpenApiMediaType
-			{
-				Schema = GetOpenApiSchema(context, requestBodyAttribute.BodyType)
-			};
-			return new OpenApiRequestBody
-			{
-				Required = requestBodyAttribute.IsRequired,
-				Description = requestBodyAttribute.Description,
-				Content = GetContentByMediaType(mediaType)
-			};
 		}
 
 		private static bool MethodIsDeprecated(
@@ -238,18 +307,49 @@ namespace SignalRSwaggerGen
 				|| (methodAttribute?.Deprecated ?? false);
 		}
 
-		private static bool ParameterIsDeprecated(ParameterInfo param, SignalRParamAttribute paramAttribute)
+		private static bool ParamIsDeprecated(ParameterInfo param, SignalRParamAttribute paramAttribute)
 		{
 			return param.GetCustomAttribute<ObsoleteAttribute>() != null
 				|| (paramAttribute?.Deprecated ?? false);
+		}
+
+		private static OpenApiSchema GetRequestBodyOpenApiSchema(
+			DocumentFilterContext context,
+			ParameterInfo param,
+			Type paramType,
+			bool isFromForm,
+			bool isFormFile)
+		{
+			return isFromForm
+				? new OpenApiSchema
+				{
+					Type = "object",
+					Properties = paramType
+						.GetProperties(ReflectionUtils.PublicInstance)
+						.ToDictionary(x => x.Name, x => GetOpenApiSchema(context, x.PropertyType))
+				}
+				: isFormFile
+					? new OpenApiSchema
+					{
+						Type = "object",
+						Properties = new Dictionary<string, OpenApiSchema>
+						{
+							{
+								param.Name,
+								GetOpenApiSchema(context, paramType)
+							}
+						}
+					}
+					: GetOpenApiSchema(context, paramType);
 		}
 
 		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
 		{
 			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema))
 			{
-				// invoke via reflection to bypass breaking change in 6.3.0 and above
-				var method = context.SchemaGenerator.GetType().GetMethod(nameof(context.SchemaGenerator.GenerateSchema), BindingFlags.InvokeMethod | BindingFlags.Public | BindingFlags.Instance);
+				// invoke via reflection to bypass breaking change in SwaggerGen 6.3.0 and above
+				var methodName = nameof(context.SchemaGenerator.GenerateSchema);
+				var method = context.SchemaGenerator.GetType().GetMethod(methodName, ReflectionUtils.PublicInstanceMethod);
 				var paramsCount = method.GetParameters().Length;
 				var args = new object[paramsCount];
 				args[0] = type;
@@ -263,19 +363,47 @@ namespace SignalRSwaggerGen
 					Reference = new OpenApiReference
 					{
 						Id = schema.Reference.Id,
-						Type = ReferenceType.Schema
+						Type = ReferenceType.Schema,
 					}
 				};
 		}
 
-		private static Dictionary<string, OpenApiMediaType> GetContentByMediaType(OpenApiMediaType mediaType)
+		private static OpenApiMediaType GetOpenApiMediaType(
+			OpenApiSchema schema,
+			ParameterInfo param,
+			bool isFromForm,
+			bool isFormFile)
 		{
-			return new Dictionary<string, OpenApiMediaType>
+			return new OpenApiMediaType
 			{
-				{ "application/json", mediaType },
-				{ "text/json", mediaType },
-				{ "text/plain", mediaType },
+				Schema = schema,
+				Encoding = isFromForm
+					? schema.Properties.ToDictionary(x => x.Key, _ => new OpenApiEncoding { Style = ParameterStyle.Form })
+					: isFormFile
+						? new Dictionary<string, OpenApiEncoding>()
+						{
+							{
+								param.Name,
+								new OpenApiEncoding { Style = ParameterStyle.Form }
+							}
+						}
+						: new Dictionary<string, OpenApiEncoding>(),
 			};
+		}
+
+		private static Dictionary<string, OpenApiMediaType> GetContentByMediaType(OpenApiMediaType mediaType, bool isFormData)
+		{
+			return isFormData
+				? new Dictionary<string, OpenApiMediaType>
+				{
+					{ "multipart/form-data", mediaType }
+				}
+				: new Dictionary<string, OpenApiMediaType>
+				{
+					{ "application/json", mediaType },
+					{ "text/json", mediaType },
+					{ "text/plain", mediaType },
+				};
 		}
 
 		private bool HubShouldBeDisplayedOnDocument(DocumentFilterContext context, SignalRHubAttribute hubAttribute)
@@ -311,7 +439,11 @@ namespace SignalRSwaggerGen
 			return GetHubName(hub);
 		}
 
-		private string GetMethodPath(string hubPath, MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
+		private string GetMethodPath(
+			string hubPath,
+			MethodInfo method,
+			SignalRHubAttribute hubAttribute,
+			SignalRMethodAttribute methodAttribute)
 		{
 			var methodPathSuffix = new string(' ', method.GetParameters().Length);
 			var methodName = methodAttribute == null
@@ -327,11 +459,11 @@ namespace SignalRSwaggerGen
 			return methodAttribute?.Tag ?? hubTag;
 		}
 
-		private Operation GetOperation(SignalRMethodAttribute methodAttribute)
+		private Operation GetOperationType(SignalRMethodAttribute methodAttribute)
 		{
-			var operation = methodAttribute?.Operation ?? Operation.Inherit;
-			if (operation == Operation.Inherit) operation = _options.Operation;
-			return operation;
+			var operationType = methodAttribute?.Operation ?? Operation.Inherit;
+			if (operationType == Operation.Inherit) operationType = _options.Operation;
+			return operationType;
 		}
 
 		private IEnumerable<Type> GetHubs()
@@ -352,7 +484,9 @@ namespace SignalRSwaggerGen
 			{
 				case AutoDiscover.None:
 				case AutoDiscover.Params:
-					methods = hub.GetMethods(ReflectionUtils.DeclaredPublicInstance).Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
+					methods = hub
+						.GetMethods(ReflectionUtils.DeclaredPublicInstance)
+						.Where(x => x.GetCustomAttribute<SignalRMethodAttribute>() != null);
 					break;
 				case AutoDiscover.Methods:
 				case AutoDiscover.MethodsAndParams:
@@ -364,7 +498,10 @@ namespace SignalRSwaggerGen
 			return methods.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
 		}
 
-		private IEnumerable<ParameterInfo> GetMethodParams(MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
+		private IEnumerable<ParameterInfo> GetMethodParams(
+			MethodInfo method,
+			SignalRHubAttribute hubAttribute,
+			SignalRMethodAttribute methodAttribute)
 		{
 			var autoDiscover = GetAutoDiscover(hubAttribute, methodAttribute);
 			IEnumerable<ParameterInfo> methodParams;
@@ -372,7 +509,9 @@ namespace SignalRSwaggerGen
 			{
 				case AutoDiscover.None:
 				case AutoDiscover.Methods:
-					methodParams = method.GetParameters().Where(x => x.GetCustomAttribute<SignalRParamAttribute>() != null);
+					methodParams = method
+						.GetParameters()
+						.Where(x => x.GetCustomAttribute<SignalRParamAttribute>() != null);
 					break;
 				case AutoDiscover.Params:
 				case AutoDiscover.MethodsAndParams:
@@ -399,7 +538,10 @@ namespace SignalRSwaggerGen
 			return autoDiscover;
 		}
 
-		private static string GetMethodSummary(SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute, MemberElement methodXml)
+		private static string GetMethodSummary(
+			SignalRHubAttribute hubAttribute,
+			SignalRMethodAttribute methodAttribute,
+			MemberElement methodXml)
 		{
 			var summary = methodAttribute?.Summary;
 			if (summary != null) return summary;
@@ -407,7 +549,10 @@ namespace SignalRSwaggerGen
 			return summary;
 		}
 
-		private static string GetMethodDescription(SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute, MemberElement methodXml)
+		private static string GetMethodDescription(
+			SignalRHubAttribute hubAttribute,
+			SignalRMethodAttribute methodAttribute,
+			MemberElement methodXml)
 		{
 			var description = methodAttribute?.Description;
 			if (description != null) return description;
@@ -415,12 +560,20 @@ namespace SignalRSwaggerGen
 			return description;
 		}
 
-		private static string GetParamDescription(SignalRHubAttribute hubAttribute, SignalRParamAttribute paramAttribute, ParamElement paramXml)
+		private static string GetParamDescription(
+			SignalRHubAttribute hubAttribute,
+			SignalRParamAttribute paramAttribute,
+			ParamElement paramXml)
 		{
 			var description = paramAttribute?.Description;
 			if (description != null) return description;
 			if (!hubAttribute.XmlCommentsDisabled) description = paramXml?.Text;
 			return description;
+		}
+
+		private static Type GetParamType(ParameterInfo param, SignalRParamAttribute paramAttribute)
+		{
+			return paramAttribute?.ParamType ?? param.ParameterType;
 		}
 
 		private XmlComments GetXmlComments(Type hub)
@@ -471,6 +624,105 @@ namespace SignalRSwaggerGen
 					var xmlComments = (XmlComments)xmlSerializer.Deserialize(streamReader);
 					_xmlComments.Add(xmlComments);
 				}
+			}
+		}
+
+		private static ApiDescription GetMethodApiDescription(
+			string tag,
+			string methodPath,
+			Operation operationType,
+			string summary,
+			string description)
+		{
+			return new ApiDescription
+			{
+				ActionDescriptor = new ActionDescriptor
+				{
+					DisplayName = StringUtils.Glue(
+						Constants.ApiDescriptionElementsSeparator,
+						tag, operationType.ToString().ToUpper(), methodPath, summary, description),
+				},
+				GroupName = tag,
+				HttpMethod = operationType.ToString().ToUpper(),
+				RelativePath = methodPath,
+			};
+		}
+
+		private static ApiParameterDescription GetParameterApiDescription(
+			string tag,
+			string methodPath,
+			Operation operationType,
+			string methodSummary,
+			string methodDescription,
+			ParameterInfo param,
+			Type paramType,
+			string paramDescription)
+		{
+			return new ApiParameterDescription
+			{
+				Name = param.Name,
+				Type = param.ParameterType,
+				ParameterDescriptor = new ParameterDescriptor
+				{
+					Name = StringUtils.Glue(
+						Constants.ApiDescriptionElementsSeparator,
+						tag, operationType.ToString().ToUpper(), methodPath, methodSummary,
+						methodDescription, param.Name, paramType.GetName(), paramDescription),
+					ParameterType = paramType,
+				},
+			};
+		}
+
+		private void ApplyOperationFilters(
+			OpenApiOperation operation,
+			DocumentFilterContext context,
+			MethodInfo method,
+			ApiDescription apiDescription)
+		{
+			foreach (var filter in _options.OperationFilters)
+			{
+				filter.Apply(
+					operation,
+					new OperationFilterContext(
+						apiDescription,
+						context.SchemaGenerator,
+						context.SchemaRepository,
+						method));
+			}
+		}
+
+		private void ApplyParameterFilters(
+			OpenApiParameter parameter,
+			DocumentFilterContext context,
+			ParameterInfo param,
+			ApiParameterDescription apiParameterDescription)
+		{
+			foreach (var filter in _options.ParameterFilters)
+			{
+				filter.Apply(
+					parameter,
+					new ParameterFilterContext(
+						apiParameterDescription,
+						context.SchemaGenerator,
+						context.SchemaRepository,
+						parameterInfo: param));
+			}
+		}
+
+		private void ApplyRequestBodyFilters(
+			OpenApiRequestBody requestBody,
+			DocumentFilterContext context,
+			ApiParameterDescription apiParameterDescription)
+		{
+			foreach (var filter in _options.RequestBodyFilters)
+			{
+				filter.Apply(
+					requestBody,
+					new RequestBodyFilterContext(
+						apiParameterDescription,
+						null,
+						context.SchemaGenerator,
+						context.SchemaRepository));
 			}
 		}
 	}

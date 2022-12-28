@@ -2,6 +2,7 @@
 using Microsoft.OpenApi.Models;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Naming;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -278,6 +279,39 @@ namespace SignalRSwaggerGen
 		}
 
 		/// <summary>
+		/// Add an operation filter
+		/// </summary>
+		/// <param name="filter">Filter</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+		public void AddOperationFilter(IOperationFilter filter)
+		{
+			if (filter == null) throw new ArgumentNullException(nameof(filter));
+			OperationFilters.Add(filter);
+		}
+
+		/// <summary>
+		/// Add a parameter filter
+		/// </summary>
+		/// <param name="filter">Filter</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+		public void AddParameterFilter(IParameterFilter filter)
+		{
+			if (filter == null) throw new ArgumentNullException(nameof(filter));
+			ParameterFilters.Add(filter);
+		}
+
+		/// <summary>
+		/// Add a request body filter
+		/// </summary>
+		/// <param name="filter">Filter</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+		public void AddRequestBodyFilter(IRequestBodyFilter filter)
+		{
+			if (filter == null) throw new ArgumentNullException(nameof(filter));
+			RequestBodyFilters.Add(filter);
+		}
+
+		/// <summary>
 		/// Disregard security requirements not added via <see cref="SignalRSwaggerGenOptions"/>
 		/// </summary>
 		public bool DisregardOtherSecurityRequirements { get; set; }
@@ -291,6 +325,9 @@ namespace SignalRSwaggerGen
 		internal HashSet<string> PathsToXmlCommentsFiles { get; } = new HashSet<string>();
 		internal HashSet<string> DocumentNames { get; } = new HashSet<string>();
 		internal HashSet<OpenApiSecurityRequirement> SecurityRequirements { get; } = new HashSet<OpenApiSecurityRequirement>();
+		internal HashSet<IOperationFilter> OperationFilters { get; } = new HashSet<IOperationFilter>();
+		internal HashSet<IParameterFilter> ParameterFilters { get; } = new HashSet<IParameterFilter>();
+		internal HashSet<IRequestBodyFilter> RequestBodyFilters { get; } = new HashSet<IRequestBodyFilter>();
 
 		private Func<string, string> _hubPathFunc = hubName => Constants.DefaultHubPathTemplate.Replace(Constants.HubNamePlaceholder, hubName);
 		private AutoDiscover _autoDiscover = Constants.DefaultAutoDiscover;

@@ -5,10 +5,24 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 
 namespace TestWebApi
 {
+	public class Filter : IOperationFilter, IParameterFilter, IRequestBodyFilter
+	{
+		public void Apply(OpenApiOperation operation, OperationFilterContext context)
+		{
+		}
+		public void Apply(OpenApiParameter parameter, ParameterFilterContext context)
+		{
+		}
+		public void Apply(OpenApiRequestBody requestBody, RequestBodyFilterContext context)
+		{
+		}
+	}
+
 	internal class Startup
 	{
 		public Startup(IConfiguration configuration)
@@ -68,6 +82,9 @@ namespace TestWebApi
 				{
 					o.UseXmlComments("TestWebApi.xml");
 					o.DisregardOtherSecurityRequirements = true;
+					o.AddOperationFilter(new Filter());
+					o.AddParameterFilter(new Filter());
+					o.AddRequestBodyFilter(new Filter());
 				});
 			});
 		}

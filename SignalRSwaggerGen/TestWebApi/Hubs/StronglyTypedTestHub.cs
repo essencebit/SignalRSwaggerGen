@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
@@ -39,12 +40,11 @@ namespace TestWebApi.Hubs
 			WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken);
 
-		[SignalRRequestBody(typeof(WeatherForecast), false, "request body description")]
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3(
 			[SignalRParam(paramType: typeof(WeatherForecast))] int agr1,
 			string arg2,
-			WeatherForecast arg3,
+			[FromBody] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken);
 
 		[return: SignalRHidden]

@@ -62,17 +62,6 @@
             <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
             <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger document</param>
         </member>
-        <member name="T:SignalRSwaggerGen.Attributes.SignalRRequestBodyAttribute">
-            <summary>
-            Use this attribute to enable Swagger documentation for request body
-            </summary>
-        </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRRequestBodyAttribute.#ctor(System.Type,System.Boolean,System.String)">
-            <param name="bodyType">The type of the request body</param>
-            <param name="isRequired">The value that indicates if the request body is required or not</param>
-            <param name="description">The text that will appear in description section of the corresponding request body in Swagger document</param>
-            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="bodyType"/> is null</exception>
-        </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
             <summary>
             Use this attribute to enable Swagger documentation for method return type
@@ -312,6 +301,27 @@
             <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
             <exception cref="T:System.ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
         </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddOperationFilter(Swashbuckle.AspNetCore.SwaggerGen.IOperationFilter)">
+            <summary>
+            Add an operation filter
+            </summary>
+            <param name="filter">Filter</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddParameterFilter(Swashbuckle.AspNetCore.SwaggerGen.IParameterFilter)">
+            <summary>
+            Add a parameter filter
+            </summary>
+            <param name="filter">Filter</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.AddRequestBodyFilter(Swashbuckle.AspNetCore.SwaggerGen.IRequestBodyFilter)">
+            <summary>
+            Add a request body filter
+            </summary>
+            <param name="filter">Filter</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="filter"/> is null</exception>
+        </member>
         <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisregardOtherSecurityRequirements">
             <summary>
             Disregard security requirements not added via <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/>
@@ -320,6 +330,11 @@
         <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.DisableSecurity">
             <summary>
             Disable security for all hubs
+            </summary>
+        </member>
+        <member name="T:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions">
+            <summary>
+            Extensions for SwaggerGenOptions
             </summary>
         </member>
         <member name="M:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions.AddSignalRSwaggerGen(Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions)">
@@ -334,6 +349,7 @@
             </summary>
             <param name="swaggerGenOptions">...</param>
             <param name="action">Action for setting up options for SignalRSwaggerGen</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="action"/> is null</exception>
         </member>
     </members>
 </doc>
