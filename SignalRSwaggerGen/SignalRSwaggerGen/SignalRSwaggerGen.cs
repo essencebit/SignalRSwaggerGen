@@ -271,7 +271,7 @@ namespace SignalRSwaggerGen
 				: methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name);
 			var nameTransformer = hubAttribute.NameTransformer ?? _options.NameTransformer;
 			if (nameTransformer != null) methodName = nameTransformer.Transform(methodName);
-			return $"{hubPath}/{methodName}{methodPathSuffix}";
+			return $"{hubPath}/{methodName}{methodPathSuffix}".Trim();
 		}
 
 		private Operation GetOperation(SignalRMethodAttribute methodAttribute)
