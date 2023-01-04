@@ -38,8 +38,8 @@
             </summary>
         </member>
         <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String,System.String,System.Boolean)">
-            <param name="name">Name of the method which will be invoked on the client side.
-            If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
+            <param name="name">Name of the method.
+            If the name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
             <param name="operation">Same as HTTP verb. If <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/> specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
             If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from <see cref="T:SignalRSwaggerGen.SignalRSwaggerGenOptions"/> will be used.</param>

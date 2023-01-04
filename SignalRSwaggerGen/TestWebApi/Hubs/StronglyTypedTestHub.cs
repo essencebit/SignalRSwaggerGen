@@ -12,7 +12,7 @@ namespace TestWebApi.Hubs
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" })]
 	public class StronglyTypedTestHub : Hub<IStronglyTypedTestHub>
 	{
-		public async Task TestMethod()
+		public async Task TestMethod4()
 		{
 			await Clients.All.TestMethod(default, default, default, default);
 		}

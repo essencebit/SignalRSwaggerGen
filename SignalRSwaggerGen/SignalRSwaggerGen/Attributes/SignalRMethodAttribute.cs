@@ -20,8 +20,8 @@ namespace SignalRSwaggerGen.Attributes
 		public string Tag { get; }
 		public bool Deprecated { get; }
 
-		/// <param name="name">Name of the method which will be invoked on the client side.
-		/// If name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
+		/// <param name="name">Name of the method.
+		/// If the name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
 		/// <param name="operation">Same as HTTP verb. If <see cref="Operation.Inherit"/> specified, then the value from <see cref="SignalRSwaggerGenOptions"/> will be used.</param>
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
 		/// If <see cref="AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from <see cref="SignalRSwaggerGenOptions"/> will be used.</param>

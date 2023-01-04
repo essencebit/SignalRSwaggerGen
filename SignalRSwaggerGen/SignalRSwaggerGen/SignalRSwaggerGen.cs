@@ -54,9 +54,10 @@ namespace SignalRSwaggerGen
 			var hubPath = GetHubPath(hub, hubAttribute);
 			var hubTag = GetHubTag(hub, hubAttribute, hubXml);
 			var methods = GetHubMethods(hub, hubAttribute);
+			var methodAttributes = methods.ToDictionary(x => x, x => x.GetCustomAttribute<SignalRMethodAttribute>());
+			var methodNames = methods.ToDictionary(x => x, x => GetMethodName(x, hubAttribute, methodAttributes[x]));
 			foreach (var method in methods)
 			{
-				var methodXml = GetMethodXml(method, xmlComments);
 				ProcessMethod(
 					swaggerDoc,
 					context,
@@ -65,7 +66,9 @@ namespace SignalRSwaggerGen
 					hubPath,
 					hubTag,
 					method,
-					methodXml);
+					methodAttributes,
+					methodNames,
+					xmlComments);
 			}
 		}
 
@@ -77,13 +80,18 @@ namespace SignalRSwaggerGen
 			string hubPath,
 			string hubTag,
 			MethodInfo method,
-			MemberElement methodXml)
+			Dictionary<MethodInfo, SignalRMethodAttribute> methodAttributes,
+			Dictionary<MethodInfo, string> methodNames,
+			XmlComments xmlComments)
 		{
-			var methodAttribute = method.GetCustomAttribute<SignalRMethodAttribute>();
-			var methodPath = GetMethodPath(hubPath, method, hubAttribute, methodAttribute);
+			var methodAttribute = methodAttributes[method];
+			var methodName = methodNames[method];
+			var methodIsPolymorphic = MethodIsPolymorphic(methodName, methodNames);
 			var methodParams = GetMethodParams(method, hubAttribute, methodAttribute);
+			var methodPath = GetMethodPath(hubPath, methodName, methodParams.Length, methodIsPolymorphic);
 			var methodReturnParam = method.ReturnParameter;
 			var operationType = GetOperationType(methodAttribute);
+			var methodXml = GetMethodXml(method, xmlComments);
 			var summary = GetMethodSummary(hubAttribute, methodAttribute, methodXml);
 			var description = GetMethodDescription(hubAttribute, methodAttribute, methodXml);
 			var methodTag = GetMethodTag(hubTag, methodAttribute);
@@ -439,19 +447,32 @@ namespace SignalRSwaggerGen
 			return GetHubName(hub);
 		}
 
-		private string GetMethodPath(
+		private static bool MethodIsPolymorphic(string methodName, Dictionary<MethodInfo, string> methodNames)
+		{
+			return methodNames.Values.Count(x => x == methodName) > 1;
+		}
+
+		private static string GetMethodPath(
 			string hubPath,
+			string methodName,
+			int methodParamsCount,
+			bool methodIsPolymorphic)
+		{
+			var methodPathSuffix = methodIsPolymorphic ? new string(' ', methodParamsCount) : null;
+			return $"{hubPath}/{methodName}{methodPathSuffix}";
+		}
+
+		private string GetMethodName(
 			MethodInfo method,
 			SignalRHubAttribute hubAttribute,
 			SignalRMethodAttribute methodAttribute)
 		{
-			var methodPathSuffix = new string(' ', method.GetParameters().Length);
 			var methodName = methodAttribute == null
 				? method.Name
 				: methodAttribute.Name.Replace(Constants.MethodNamePlaceholder, method.Name);
 			var nameTransformer = hubAttribute.NameTransformer ?? _options.NameTransformer;
 			if (nameTransformer != null) methodName = nameTransformer.Transform(methodName);
-			return $"{hubPath}/{methodName}{methodPathSuffix}";
+			return methodName;
 		}
 
 		private static string GetMethodTag(string hubTag, SignalRMethodAttribute methodAttribute)
@@ -498,7 +519,7 @@ namespace SignalRSwaggerGen
 			return methods.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
 		}
 
-		private IEnumerable<ParameterInfo> GetMethodParams(
+		private ParameterInfo[] GetMethodParams(
 			MethodInfo method,
 			SignalRHubAttribute hubAttribute,
 			SignalRMethodAttribute methodAttribute)
@@ -520,7 +541,7 @@ namespace SignalRSwaggerGen
 				default:
 					throw new NotSupportedException($"Auto-discover option '{autoDiscover}' not supported");
 			}
-			return methodParams.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
+			return methodParams.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null).ToArray();
 		}
 
 		private AutoDiscover GetAutoDiscover(SignalRHubAttribute hubAttribute)
