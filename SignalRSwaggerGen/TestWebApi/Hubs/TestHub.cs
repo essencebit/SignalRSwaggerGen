@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace TestWebApi.Hubs
 {
 	[Authorize(AuthenticationSchemes = "Basic")]
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" }, nameTransformerType: typeof(ToLowerTransformer))]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" }, nameTransformerType: typeof(ToLowerTransformer), description: "<br>my <b>dear</b> hub<br>")]
 	public class TestHub : Hub
 	{
 		[AllowAnonymous]

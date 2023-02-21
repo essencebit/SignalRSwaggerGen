@@ -84,6 +84,11 @@ namespace SignalRSwaggerGen
 		public bool UseHubXmlCommentsSummaryAsTag { get; set; }
 
 		/// <summary>
+		/// Use summary section from hub's XML comments as tag description for Swagger doc. Default is true.
+		/// </summary>
+		public bool UseHubXmlCommentsSummaryAsTagDescription { get; set; } = true;
+
+		/// <summary>
 		/// Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
 		/// This method has additive effect. You can use it multiple times to add more assemblies.
 		/// </summary>

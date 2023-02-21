@@ -53,9 +53,11 @@ namespace SignalRSwaggerGen
 			var hubXml = GetHubXml(hub, xmlComments);
 			var hubPath = GetHubPath(hub, hubAttribute);
 			var hubTag = GetHubTag(hub, hubAttribute, hubXml);
+			var hubDescription = GetHubDescription(hubAttribute, hubXml);
 			var methods = GetHubMethods(hub, hubAttribute);
 			var methodAttributes = methods.ToDictionary(x => x, x => x.GetCustomAttribute<SignalRMethodAttribute>());
 			var methodNames = methods.ToDictionary(x => x, x => GetMethodName(x, hubAttribute, methodAttributes[x]));
+			swaggerDoc.Tags.Add(new OpenApiTag { Name = hubTag, Description = hubDescription });
 			foreach (var method in methods)
 			{
 				ProcessMethod(
@@ -445,6 +447,16 @@ namespace SignalRSwaggerGen
 				&& _options.UseHubXmlCommentsSummaryAsTag
 				&& hubXml?.Summary?.Text != null) return hubXml.Summary.Text;
 			return GetHubName(hub);
+		}
+
+		private string GetHubDescription(SignalRHubAttribute hubAttribute, MemberElement hubXml)
+		{
+			if (hubAttribute.Description != null) return hubAttribute.Description;
+			if (!hubAttribute.XmlCommentsDisabled
+				&& !_options.UseHubXmlCommentsSummaryAsTag
+				&& _options.UseHubXmlCommentsSummaryAsTagDescription
+				&& hubXml?.Summary?.Text != null) return hubXml.Summary.Text;
+			return null;
 		}
 
 		private static bool MethodIsPolymorphic(string methodName, Dictionary<MethodInfo, string> methodNames)

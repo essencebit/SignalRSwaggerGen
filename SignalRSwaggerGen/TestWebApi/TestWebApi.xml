@@ -13,6 +13,16 @@
             <param name="form"></param>
             <returns></returns>
         </member>
+        <member name="T:TestWebApi.Hubs.StronglyTypedTestHub">
+            <summary>
+            xxx
+            </summary>
+        </member>
+        <member name="T:TestWebApi.Hubs.IStronglyTypedTestHub">
+            <summary>
+            yyy
+            </summary>
+        </member>
         <member name="T:TestWebApi.Hubs.Outer.Middle`2.Inner.XmlCommentedHub`2">
             <summary>
             xml commented hub

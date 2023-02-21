@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace TestWebApi.Hubs
 {
+	/// <summary>
+	/// xxx
+	/// </summary>
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" })]
 	public class StronglyTypedTestHub : Hub<IStronglyTypedTestHub>
 	{
@@ -18,12 +21,15 @@ namespace TestWebApi.Hubs
 		}
 	}
 
+	/// <summary>
+	/// yyy
+	/// </summary>
 	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" })]
 	public interface IStronglyTypedTestHub
 	{
 		[Authorize]
 		[return: SignalRReturn]
-		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Params)]
+		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Params, tag: "Special")]
 		public ValueTask TestMethod(
 			int agr1,
 			string arg2,

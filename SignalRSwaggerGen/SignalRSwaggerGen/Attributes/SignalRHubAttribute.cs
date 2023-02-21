@@ -19,6 +19,7 @@ namespace SignalRSwaggerGen.Attributes
 		public string Tag { get; }
 		public bool XmlCommentsDisabled { get; }
 		public bool Deprecated { get; }
+		public string Description { get; }
 
 		/// <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
 		/// If not specified, the func from <see cref="SignalRSwaggerGenOptions"/> will be used to get the path.</param>
@@ -33,6 +34,7 @@ namespace SignalRSwaggerGen.Attributes
 		/// If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
 		/// <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
 		/// <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger document</param>
+		/// <param name="description">The text that will appear in description section of decorated hub in Swagger document</param>
 		/// <exception cref="ArgumentException">Thrown if
 		/// - <paramref name="autoDiscover"/> value not allowed for this attribute
 		/// - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
@@ -43,7 +45,8 @@ namespace SignalRSwaggerGen.Attributes
 			Type nameTransformerType = null,
 			string tag = null,
 			bool xmlCommentsDisabled = false,
-			bool deprecated = false)
+			bool deprecated = false,
+			string description = null)
 		{
 			if (!_validAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
 			ValidateNameTransformerType(nameTransformerType);
@@ -54,6 +57,7 @@ namespace SignalRSwaggerGen.Attributes
 			Tag = tag;
 			XmlCommentsDisabled = xmlCommentsDisabled;
 			Deprecated = deprecated;
+			Description = description;
 		}
 
 		private static void ValidateNameTransformerType(Type nameTransformerType)
