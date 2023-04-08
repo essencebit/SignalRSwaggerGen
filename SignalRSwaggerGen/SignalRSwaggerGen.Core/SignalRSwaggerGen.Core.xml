@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SignalRSwaggerGen.Core</name>
+    </assembly>
+    <members>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRHiddenAttribute">
+            <summary>
+            Use this attribute to disable Swagger documentation for specific components
+            </summary>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRHubAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for hubs
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean,System.Boolean,System.String)">
+            <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
+            If not specified, the func from SignalRSwaggerGenOptions will be used to get the path.</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
+            If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from SignalRSwaggerGenOptions will be used.</param>
+            <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
+            If null specified, then the value from SignalRSwaggerGenOptions will be used. If empty array specified, then the hub will be displayed in all documents.</param>
+            <param name="nameTransformerType">The type of the name transformer. The type must inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class, be non-abstract and have public parameterless constructor.
+            The name transformer will be used to transform the name of the hub and its methods. If null specified, the transformer from SignalRSwaggerGenOptions will be used.
+            The namespace <see cref="N:SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.</param>
+            <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
+            If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
+            <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
+            <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger document</param>
+            <param name="description">The text that will appear in description section of decorated hub in Swagger document</param>
+            <exception cref="T:System.ArgumentException">Thrown if
+            - <paramref name="autoDiscover"/> value not allowed for this attribute
+            - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for hub methods
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRMethodAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.Operation,SignalRSwaggerGen.Enums.AutoDiscover,System.String,System.String,System.String,System.Boolean)">
+            <param name="name">Name of the method.
+            If the name contains "[Method]", this part will be replaced with the name of the method holding this attribute.</param>
+            <param name="operation">Same as HTTP verb. If <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/> specified, then the value from SignalRSwaggerGenOptions will be used.</param>
+            <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
+            If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from SignalRSwaggerGenOptions will be used.</param>
+            <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
+            If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
+            <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
+            <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
+            <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger document</param>
+            <exception cref="T:System.ArgumentException">Thrown if
+            - <paramref name="name"/> is null or empty
+            - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRParamAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for method params
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type,System.Boolean)">
+            <param name="description">The text that will appear in description section of decorated parameter in Swagger document</param>
+            <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
+            <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger document</param>
+        </member>
+        <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
+            <summary>
+            Use this attribute to enable Swagger documentation for method return type
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRReturnAttribute.#ctor(System.Type,System.Int32,System.String)">
+            <param name="returnType">Return type. If null specified, the return type of the method will be picked up.</param>
+            <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger document</param>
+            <param name="description">The text that will appear in description section of the corresponding response in Swagger document</param>
+        </member>
+        <member name="T:SignalRSwaggerGen.Enums.AutoDiscover">
+            <summary>
+            A flag indicating what components will have Swagger documentation enabled automatically
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit">
+            <summary>
+            Inherit value from higher level configurations
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.None">
+            <summary>
+            None
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Methods">
+            <summary>
+            Public non-static methods
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.Params">
+            <summary>
+            Method params
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.AutoDiscover.MethodsAndParams">
+            <summary>
+            Public non-static methods and their params
+            </summary>
+        </member>
+        <member name="T:SignalRSwaggerGen.Enums.Operation">
+            <summary>
+            Same as HTTP verb
+            </summary>
+        </member>
+        <member name="F:SignalRSwaggerGen.Enums.Operation.Inherit">
+            <summary>
+            Inherit value from higher level configurations
+            </summary>
+        </member>
+        <member name="T:SignalRSwaggerGen.Naming.NameTransformer">
+            <summary>
+            Inherit from this class in order to create a name transformer
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.NameTransformer.Transform(System.String)">
+            <summary>
+            Name transformation function
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Transformed name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToCamelTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to camel case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Camel case name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToLowerTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to lower case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Lower case name</returns>
+        </member>
+        <member name="M:SignalRSwaggerGen.Naming.ToUpperTransformer.Transform(System.String)">
+            <summary>
+            Transforms the name to upper case
+            </summary>
+            <param name="name">The name to transform</param>
+            <returns>Upper case name</returns>
+        </member>
+    </members>
+</doc>

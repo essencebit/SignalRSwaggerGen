@@ -3,6 +3,8 @@ using System.Xml.Serialization;
 
 namespace SignalRSwaggerGen.Utils.XmlComments
 {
+	// please leave all the types here public, otherwise the xml deserialization will crash
+
 	[XmlRoot("doc")]
 	public class XmlComments
 	{
