@@ -1,18 +1,14 @@
-﻿using SignalRSwaggerGen.Utils;
-
-namespace SignalRSwaggerGen.Naming
+﻿namespace SignalRSwaggerGen.Naming;
+public class ToLowerTransformer : NameTransformer
 {
-	public class ToLowerTransformer : NameTransformer
+	/// <summary>
+	/// Transforms the name to lower case
+	/// </summary>
+	/// <param name="name">The name to transform</param>
+	/// <returns>Lower case name</returns>
+	public override string Transform(string name)
 	{
-		/// <summary>
-		/// Transforms the name to lower case
-		/// </summary>
-		/// <param name="name">The name to transform</param>
-		/// <returns>Lower case name</returns>
-		public override string Transform(string name)
-		{
-			if (name.IsNullOrEmpty()) return name;
-			return name.ToLowerInvariant();
-		}
+		if (name.IsNullOrEmpty()) return name;
+		return name.ToLowerInvariant();
 	}
 }

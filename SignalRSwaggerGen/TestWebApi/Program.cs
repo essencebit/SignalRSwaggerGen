@@ -1,20 +1,33 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Hosting;
+﻿var builder = WebApplication.CreateBuilder(args);
 
-namespace TestWebApi
+builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen(options =>
 {
-	public class Program
-	{
-		public static void Main(string[] args)
-		{
-			CreateHostBuilder(args).Build().Run();
-		}
+    var apiInfo = new OpenApiInfo { Title = "TestWebApi", Version = "v1" };
+    options.SwaggerDoc("controllers", apiInfo);
+    options.SwaggerDoc("hubs", apiInfo);
+    options.IncludeXmlComments("TestWebApi.xml", true);
+    options.AddSignalRSwaggerGen();
+});
 
-		public static IHostBuilder CreateHostBuilder(string[] args) =>
-			Host.CreateDefaultBuilder(args)
-				.ConfigureWebHostDefaults(webBuilder =>
-				{
-					webBuilder.UseStartup<Startup>();
-				});
-	}
+var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/controllers/swagger.json", "REST API");
+        options.SwaggerEndpoint("/swagger/hubs/swagger.json", "SignalR");
+    });
 }
+
+app.UseHttpsRedirection();
+
+app.UseRouting();
+
+app.MapControllers();
+
+app.Run();
