@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
-		<SignAssembly>false</SignAssembly>
+		<SignAssembly>True</SignAssembly>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<Authors>Dorin Mocan</Authors>
 		<Company>Essencebit</Company>
@@ -10,15 +10,16 @@
 		<PackageTags>swagger openapi open api swashbuckle swaggergen documentation description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-		<Version>1.0.0</Version>
-		<PackageReleaseNotes>Moved core components of SignalRSwaggerGen to a separate package(this one).</PackageReleaseNotes>
-		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<Version>1.1.0</Version>
+		<PackageReleaseNotes>Signed the assembly.</PackageReleaseNotes>
+		<AssemblyVersion>1.1.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<FileVersion>1.0.0.0</FileVersion>
+		<FileVersion>1.1.0.0</FileVersion>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>Logo.png</PackageIcon>
 		<PackageIconUrl />
 		<RootNamespace>SignalRSwaggerGen</RootNamespace>
+		<AssemblyOriginatorKeyFile>C:\Users\dorin\OneDrive\Documents\Business\Essencebit\Process\Utils\.NET\Assembly signing\ssg.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
