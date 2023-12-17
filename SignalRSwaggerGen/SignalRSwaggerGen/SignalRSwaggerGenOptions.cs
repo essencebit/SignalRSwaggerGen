@@ -17,9 +17,10 @@ namespace SignalRSwaggerGen
 	public class SignalRSwaggerGenOptions
 	{
 		/// <summary>
-		/// The func that will get the hub name and return the path for the hub. The func will be skipped for the hubs that have a not null path specified for them in particular.
+		/// The func that will receive as input the hub name and will return the path for the hub.
+		/// The func will be disregarded for the hubs that have a not null path specified on <see cref="SignalRSwaggerGen.Attributes.SignalRHubAttribute"/> level.
 		/// If the func not specified explicitly, the default func will return a value based on the template <see cref="Constants.DefaultHubPathTemplate"/>.
-		/// If you decide to set a custom func, make sure the func will return a different path for each hub.
+		/// If you decide to set a custom func, make sure the func will return a distinct path for each hub, in order to avoid potential problems.
 		/// </summary>
 		/// <example>hubName => $"hubs/are/here/{hubName}"</example>
 		/// <exception cref="ArgumentNullException">Thrown if the value is null</exception>

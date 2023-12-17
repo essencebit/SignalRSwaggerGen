@@ -25,14 +25,14 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="operation">Same as HTTP verb. If <see cref="Operation.Inherit"/> specified, then the value from SignalRSwaggerGenOptions will be used.</param>
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
 		/// If <see cref="AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from SignalRSwaggerGenOptions will be used.</param>
-		/// <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
+		/// <param name="summary">The text that will appear in summary section of the decorated method in Swagger doc.
 		/// If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
-		/// <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
+		/// <param name="description">The text that will appear in description section of decorated method in Swagger doc</param>
 		/// <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
-		/// <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger document</param>
+		/// <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger doc</param>
 		/// <exception cref="ArgumentException">Thrown if
-		/// - <paramref name="name"/> is null or empty
-		/// - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
+		/// <paramref name="name"/> is null or empty or
+		/// <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
 		public SignalRMethodAttribute(
 			string name = Constants.MethodNamePlaceholder,
 			Operation operation = Operation.Inherit,

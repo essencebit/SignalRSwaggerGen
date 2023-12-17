@@ -12,9 +12,9 @@ namespace SignalRSwaggerGen.Attributes
 		public int StatusCode { get; }
 		public string Description { get; }
 
-		/// <param name="returnType">Return type. If null specified, the return type of the method will be picked up.</param>
-		/// <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger document</param>
-		/// <param name="description">The text that will appear in description section of the corresponding response in Swagger document</param>
+		/// <param name="returnType">Return type. If null specified, the return type of the method will be used.</param>
+		/// <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger doc</param>
+		/// <param name="description">The text that will appear in description section of the corresponding response in Swagger doc</param>
 		public SignalRReturnAttribute(Type returnType = null, int statusCode = 200, string description = "Success")
 		{
 			ReturnType = returnType;

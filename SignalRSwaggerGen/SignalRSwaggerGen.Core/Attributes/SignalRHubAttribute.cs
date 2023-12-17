@@ -22,7 +22,7 @@ namespace SignalRSwaggerGen.Attributes
 		public string Description { get; }
 
 		/// <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
-		/// If not specified, the func from SignalRSwaggerGenOptions will be used to get the path.</param>
+		/// If not specified, the func from SignalRSwaggerGenOptions will be used to set the path.</param>
 		/// <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
 		/// If <see cref="AutoDiscover.Inherit"/> specified, the value from SignalRSwaggerGenOptions will be used.</param>
 		/// <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
@@ -33,11 +33,11 @@ namespace SignalRSwaggerGen.Attributes
 		/// <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
 		/// If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
 		/// <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
-		/// <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger document</param>
-		/// <param name="description">The text that will appear in description section of decorated hub in Swagger document</param>
+		/// <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger doc</param>
+		/// <param name="description">The text that will appear in description section of decorated hub in Swagger doc</param>
 		/// <exception cref="ArgumentException">Thrown if
-		/// - <paramref name="autoDiscover"/> value not allowed for this attribute
-		/// - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
+		/// <paramref name="autoDiscover"/> value not allowed for this attribute or
+		/// <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
 		public SignalRHubAttribute(
 			string path = null,
 			AutoDiscover autoDiscover = AutoDiscover.Inherit,

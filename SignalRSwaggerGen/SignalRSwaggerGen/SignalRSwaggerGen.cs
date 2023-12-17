@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
@@ -671,8 +671,8 @@ namespace SignalRSwaggerGen
 			{
 				ActionDescriptor = new ActionDescriptor
 				{
-					DisplayName = StringUtils.Glue(
-						Constants.ApiDescriptionElementsSeparator,
+					DisplayName = string.Join(
+						Constants.ApiDescriptionElementsSeparator.ToString(),
 						tag, operationType.ToString().ToUpper(), methodPath, summary, description),
 				},
 				GroupName = tag,
@@ -697,8 +697,8 @@ namespace SignalRSwaggerGen
 				Type = param.ParameterType,
 				ParameterDescriptor = new ParameterDescriptor
 				{
-					Name = StringUtils.Glue(
-						Constants.ApiDescriptionElementsSeparator,
+					Name = string.Join(
+						Constants.ApiDescriptionElementsSeparator.ToString(),
 						tag, operationType.ToString().ToUpper(), methodPath, methodSummary,
 						methodDescription, param.Name, paramType.GetName(), paramDescription),
 					ParameterType = paramType,

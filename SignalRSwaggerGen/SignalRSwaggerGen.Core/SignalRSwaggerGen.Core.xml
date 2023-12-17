@@ -16,7 +16,7 @@
         </member>
         <member name="M:SignalRSwaggerGen.Attributes.SignalRHubAttribute.#ctor(System.String,SignalRSwaggerGen.Enums.AutoDiscover,System.String[],System.Type,System.String,System.Boolean,System.Boolean,System.String)">
             <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
-            If not specified, the func from SignalRSwaggerGenOptions will be used to get the path.</param>
+            If not specified, the func from SignalRSwaggerGenOptions will be used to set the path.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
             If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from SignalRSwaggerGenOptions will be used.</param>
             <param name="documentNames">An array of names of the Swagger documents the hub will be displayed in.
@@ -27,11 +27,11 @@
             <param name="tag">The tag under which the hub will be placed in Swagger doc. If null specified, the summary section of the XML comments of the hub will be used.
             If XML comments missing or not enabled, the name of the type holding this attribute will be used.</param>
             <param name="xmlCommentsDisabled">A flag indicating if XML comments are disabled for the hub</param>
-            <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger document</param>
-            <param name="description">The text that will appear in description section of decorated hub in Swagger document</param>
+            <param name="deprecated">A flag which indicates if the decorated hub will be marked as deprecated in Swagger doc</param>
+            <param name="description">The text that will appear in description section of decorated hub in Swagger doc</param>
             <exception cref="T:System.ArgumentException">Thrown if
-            - <paramref name="autoDiscover"/> value not allowed for this attribute
-            - <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
+            <paramref name="autoDiscover"/> value not allowed for this attribute or
+            <paramref name="nameTransformerType"/> is abstract or does not inherit from <see cref="T:SignalRSwaggerGen.Naming.NameTransformer"/> class or has no public parameterless constructor</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRMethodAttribute">
             <summary>
@@ -44,14 +44,14 @@
             <param name="operation">Same as HTTP verb. If <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/> specified, then the value from SignalRSwaggerGenOptions will be used.</param>
             <param name="autoDiscover">A flag indicating what components will have Swagger documentation enabled automatically.
             If <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/> specified, the value from the hub will be used. If the hub also has this value specified, then the value from SignalRSwaggerGenOptions will be used.</param>
-            <param name="summary">The text that will appear in summary section of the decorated method in Swagger document.
+            <param name="summary">The text that will appear in summary section of the decorated method in Swagger doc.
             If null specified and XML comments not disabled, the summary section of the XML comments of the method will be used.</param>
-            <param name="description">The text that will appear in description section of decorated method in Swagger document</param>
+            <param name="description">The text that will appear in description section of decorated method in Swagger doc</param>
             <param name="tag">The tag under which the method will be placed in Swagger doc. If null specified, the tag of the hub will be used.</param>
-            <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger document</param>
+            <param name="deprecated">A flag which indicates if the decorated method will be marked as deprecated in Swagger doc</param>
             <exception cref="T:System.ArgumentException">Thrown if
-            - <paramref name="name"/> is null or empty
-            - <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
+            <paramref name="name"/> is null or empty or
+            <paramref name="autoDiscover"/> value not allowed for this attribute</exception>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRParamAttribute">
             <summary>
@@ -59,9 +59,9 @@
             </summary>
         </member>
         <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type,System.Boolean)">
-            <param name="description">The text that will appear in description section of decorated parameter in Swagger document</param>
-            <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be picked up.</param>
-            <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger document</param>
+            <param name="description">The text that will appear in description section of decorated parameter in Swagger doc</param>
+            <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be used.</param>
+            <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger doc</param>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
             <summary>
@@ -69,9 +69,9 @@
             </summary>
         </member>
         <member name="M:SignalRSwaggerGen.Attributes.SignalRReturnAttribute.#ctor(System.Type,System.Int32,System.String)">
-            <param name="returnType">Return type. If null specified, the return type of the method will be picked up.</param>
-            <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger document</param>
-            <param name="description">The text that will appear in description section of the corresponding response in Swagger document</param>
+            <param name="returnType">Return type. If null specified, the return type of the method will be used.</param>
+            <param name="statusCode">The text that will appear in status code section of the corresponding response in Swagger doc</param>
+            <param name="description">The text that will appear in description section of the corresponding response in Swagger doc</param>
         </member>
         <member name="T:SignalRSwaggerGen.Enums.AutoDiscover">
             <summary>
