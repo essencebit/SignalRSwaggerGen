@@ -10,6 +10,7 @@ using SignalRSwaggerGen.Utils.XmlComments;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -138,7 +139,7 @@ namespace SignalRSwaggerGen
 				Parameters = ToOpenApiParameters(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
 				RequestBody = GetOpenApiRequestBody(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
 				Responses = ToOpenApiResponses(context, methodReturnParam),
-				Security = GetSecurity(hub, method),
+				Security = GetOpenApiSecurityRequirements(hub, method),
 				Deprecated = MethodIsDeprecated(hub, hubAttribute, method, methodAttribute),
 			};
 			swaggerDoc.Paths.Add(
@@ -162,29 +163,32 @@ namespace SignalRSwaggerGen
 			return new List<OpenApiTag> { new OpenApiTag { Name = tag } };
 		}
 
-		private IList<OpenApiSecurityRequirement> GetSecurity(Type hub, MethodInfo method)
+		private IList<OpenApiSecurityRequirement> GetOpenApiSecurityRequirements(Type hub, MethodInfo method)
 		{
 			if (_options.DisableSecurity
 				|| hub.GetCustomAttribute<AllowAnonymousAttribute>() != null
 				|| method.GetCustomAttribute<AllowAnonymousAttribute>() != null)
 				return new List<OpenApiSecurityRequirement> { new OpenApiSecurityRequirement() };
 
-			var authorizeAttribute = method.GetCustomAttribute<AuthorizeAttribute>()
-				?? hub.GetCustomAttribute<AuthorizeAttribute>();
+			var authorizeAttributes = method.GetCustomAttributes<AuthorizeAttribute>();
+			if (!authorizeAttributes.Any())
+				authorizeAttributes = hub.GetCustomAttributes<AuthorizeAttribute>();
 
-			var securitySchemes = authorizeAttribute
-				?.AuthenticationSchemes
-				?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+			var securitySchemes = authorizeAttributes
+				.SelectMany(x => x.AuthenticationSchemes
+					?.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+					?? Enumerable.Empty<string>())
+				.Select(x => x.Trim())
+				.Distinct()
 				.Select(x => new OpenApiSecurityScheme
 				{
 					Reference = new OpenApiReference
 					{
 						Type = ReferenceType.SecurityScheme,
-						Id = x.Trim(),
+						Id = x,
 					},
 				})
-				.ToList()
-				?? Enumerable.Empty<OpenApiSecurityScheme>();
+				.ToList();
 
 			if (!securitySchemes.Any())
 				return _options.SecurityRequirements.Any()
@@ -225,6 +229,7 @@ namespace SignalRSwaggerGen
 					var paramDescription = GetParamDescription(hubAttribute, paramAttribute, paramXml);
 					var paramType = GetParamType(param, paramAttribute);
 					var deprecated = ParamIsDeprecated(param, paramAttribute);
+					var isRequired = ParamIsRequired(param, paramAttribute);
 					var parameter = new OpenApiParameter
 					{
 						Name = param.Name,
@@ -232,6 +237,7 @@ namespace SignalRSwaggerGen
 						Description = paramDescription,
 						Schema = GetOpenApiSchema(context, paramType),
 						Deprecated = deprecated,
+						Required = isRequired,
 					};
 					var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
 					ApplyParameterFilters(parameter, context, param, apiDescription);
@@ -265,13 +271,15 @@ namespace SignalRSwaggerGen
 			var isFromForm = param.IsFromForm();
 			var isFormFile = paramType.IsFormFile();
 			var isFormData = isFromForm || isFormFile;
+			var isRequired = ParamIsRequired(param, paramAttribute);
 
 			var schema = GetRequestBodyOpenApiSchema(context, param, paramType, isFromForm, isFormFile);
 			var mediaType = GetOpenApiMediaType(schema, param, isFromForm, isFormFile);
 			var requestBody = new OpenApiRequestBody
 			{
 				Description = paramDescription,
-				Content = GetContentByMediaType(mediaType, isFormData)
+				Content = GetContentByMediaType(mediaType, isFormData),
+				Required = isRequired,
 			};
 
 			var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
@@ -315,12 +323,6 @@ namespace SignalRSwaggerGen
 				|| method.GetCustomAttribute<ObsoleteAttribute>() != null
 				|| (hubAttribute?.Deprecated ?? false)
 				|| (methodAttribute?.Deprecated ?? false);
-		}
-
-		private static bool ParamIsDeprecated(ParameterInfo param, SignalRParamAttribute paramAttribute)
-		{
-			return param.GetCustomAttribute<ObsoleteAttribute>() != null
-				|| (paramAttribute?.Deprecated ?? false);
 		}
 
 		private static OpenApiSchema GetRequestBodyOpenApiSchema(
@@ -602,6 +604,18 @@ namespace SignalRSwaggerGen
 			if (description != null) return description;
 			if (!hubAttribute.XmlCommentsDisabled) description = paramXml?.Text;
 			return description;
+		}
+
+		private static bool ParamIsDeprecated(ParameterInfo param, SignalRParamAttribute paramAttribute)
+		{
+			return param.GetCustomAttribute<ObsoleteAttribute>() != null
+				|| (paramAttribute?.Deprecated ?? false);
+		}
+
+		private static bool ParamIsRequired(ParameterInfo param, SignalRParamAttribute paramAttribute)
+		{
+			return param.GetCustomAttribute<RequiredAttribute>() != null
+				|| (paramAttribute?.Required ?? false);
 		}
 
 		private static Type GetParamType(ParameterInfo param, SignalRParamAttribute paramAttribute)

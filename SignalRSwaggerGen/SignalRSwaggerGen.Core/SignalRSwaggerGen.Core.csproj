@@ -7,14 +7,14 @@
 		<Authors>Dorin Mocan</Authors>
 		<Company>Essencebit</Company>
 		<Description>This package contains the core components of SignalRSwaggerGen - a package that can be used to generate Swagger documentation for SignalR hubs.</Description>
-		<PackageTags>swagger openapi open api swashbuckle swaggergen documentation description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
+		<PackageTags>swagger openapi open api nswag swashbuckle swaggergen documentation discovery help description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-		<Version>1.1.0</Version>
-		<PackageReleaseNotes>Signed the assembly.</PackageReleaseNotes>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
+		<Version>1.2.0</Version>
+		<PackageReleaseNotes>Added "required" parameter for SignalRParamAttribute.</PackageReleaseNotes>
+		<AssemblyVersion>1.2.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<FileVersion>1.1.0.0</FileVersion>
+		<FileVersion>1.2.0.0</FileVersion>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>Logo.png</PackageIcon>
 		<PackageIconUrl />

@@ -58,10 +58,11 @@
             Use this attribute to enable Swagger documentation for method params
             </summary>
         </member>
-        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type,System.Boolean)">
+        <member name="M:SignalRSwaggerGen.Attributes.SignalRParamAttribute.#ctor(System.String,System.Type,System.Boolean,System.Boolean)">
             <param name="description">The text that will appear in description section of decorated parameter in Swagger doc</param>
             <param name="paramType">Parameter type. If null specified, the type of the parameter holding this attribute will be used.</param>
             <param name="deprecated">A flag which indicates if the decorated parameter will be marked as deprecated in Swagger doc</param>
+            <param name="required">A flag which indicates if the decorated parameter will be marked as required in Swagger doc</param>
         </member>
         <member name="T:SignalRSwaggerGen.Attributes.SignalRReturnAttribute">
             <summary>
