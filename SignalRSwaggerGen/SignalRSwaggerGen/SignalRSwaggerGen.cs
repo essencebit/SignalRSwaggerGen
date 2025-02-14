@@ -303,12 +303,22 @@ namespace SignalRSwaggerGen
 					break;
 				case AutoDiscover.Methods:
 				case AutoDiscover.MethodsAndParams:
-					methods = hub.GetMethods(ReflectionUtils.DeclaredPublicInstance);
+					methods = GetAllMethods(hub, ReflectionUtils.DeclaredPublicInstance);
 					break;
 				default:
 					throw new NotSupportedException($"Auto-discover option '{autoDiscover}' not supported");
 			}
 			return methods.Where(x => x.GetCustomAttribute<SignalRHiddenAttribute>() == null);
+	
+			IEnumerable<MethodInfo> GetAllMethods(Type t, BindingFlags flags)
+			{
+				foreach (var m in t.GetMethods(flags))
+					yield return m;
+     				if (hubAttribute.IncludeInheritedMethods && t.IsInterface)
+					foreach (var iface in t.GetInterfaces())
+						foreach (var method in GetAllMethods(iface, flags))
+							yield return method;
+			}
 		}
 
 		private IEnumerable<ParameterInfo> GetMethodParams(MethodInfo method, SignalRHubAttribute hubAttribute, SignalRMethodAttribute methodAttribute)
