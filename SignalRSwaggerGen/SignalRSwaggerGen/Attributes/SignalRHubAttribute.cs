@@ -18,6 +18,7 @@ namespace SignalRSwaggerGen.Attributes
 		public NameTransformer NameTransformer { get; }
 		public string Tag { get; }
 		public bool XmlCommentsDisabled { get; }
+		public bool IncludeInheritedMethods {get;}
 
 		/// <param name="path">Path of the hub. If path contains "[Hub]", this part will be replaced with the name of the type holding this attribute(hub name).
 		/// If not specified, the func from 'SignalRSwaggerGenOptions' will be used to get the path.</param>
@@ -40,7 +41,8 @@ namespace SignalRSwaggerGen.Attributes
 			string[] documentNames = null,
 			Type nameTransformerType = null,
 			string tag = null,
-			bool xmlCommentsDisabled = false)
+			bool xmlCommentsDisabled = false,
+			bool includeInheritedMethods = false)
 		{
 			if (!_validAutoDiscoverValues.Contains(autoDiscover)) throw new ArgumentException($"Value {autoDiscover} not allowed for this attribute", nameof(autoDiscover));
 			ValidateNameTransformerType(nameTransformerType);
@@ -50,6 +52,7 @@ namespace SignalRSwaggerGen.Attributes
 			NameTransformer = nameTransformerType == null ? null : (NameTransformer)Activator.CreateInstance(nameTransformerType);
 			Tag = tag;
 			XmlCommentsDisabled = xmlCommentsDisabled;
+			IncludeInheritedMethods = includeInheritedMethods;
 		}
 
 		private static void ValidateNameTransformerType(Type nameTransformerType)
