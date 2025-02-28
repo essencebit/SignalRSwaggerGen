@@ -277,7 +277,7 @@ namespace SignalRSwaggerGen
 		public void AddSecurityRequirements(params OpenApiSecurityRequirement[] securityRequirements)
 		{
 			if (securityRequirements == null) throw new ArgumentNullException(nameof(securityRequirements));
-			if (!securityRequirements.Any()) throw new ArgumentException("Empty", nameof(securityRequirements));
+			if (securityRequirements.Length == 0) throw new ArgumentException("Empty", nameof(securityRequirements));
 			foreach (var securityRequirement in securityRequirements)
 			{
 				SecurityRequirements.Add(securityRequirement);
@@ -327,6 +327,70 @@ namespace SignalRSwaggerGen
 		/// </summary>
 		public bool DisableSecurity { get; set; }
 
+		/// <summary>
+		/// A flag indicating what hub methods must be included in Swagger documentation.
+		/// Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+		public HubMethodsScan HubMethodsScan
+		{
+			get => _hubMethodsScan;
+			set
+			{
+				if (value == HubMethodsScan.Inherit) throw new ArgumentException($"Hub methods scan option '{value}' not allowed, since there's no other higher level configuration to inherit from");
+				_hubMethodsScan = value;
+			}
+		}
+
+		/// <summary>
+		/// Specify the type whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="type">Type to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null</exception>
+		public void IgnoreMethodsInheritedFromType(Type type)
+		{
+			if (type == null) throw new ArgumentNullException(nameof(type));
+			DeclaringTypesOfMethodsToIgnore.Add(type);
+		}
+
+		/// <summary>
+		/// Specify the types whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="types">Types to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+		public void IgnoreMethodsInheritedFromTypes(IEnumerable<Type> types)
+		{
+			if (types == null) throw new ArgumentNullException(nameof(types));
+			if (!types.Any()) throw new ArgumentException("Empty", nameof(types));
+			foreach (var type in types)
+			{
+				IgnoreMethodsInheritedFromType(type);
+			}
+		}
+
+		/// <summary>
+		/// Specify the types whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="types">Types to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+		public void IgnoreMethodsInheritedFromTypes(params Type[] types)
+		{
+			if (types == null) throw new ArgumentNullException(nameof(types));
+			if (types.Length == 0) throw new ArgumentException("Empty", nameof(types));
+			foreach (var type in types)
+			{
+				IgnoreMethodsInheritedFromType(type);
+			}
+		}
+
 		internal HashSet<Assembly> Assemblies { get; } = new HashSet<Assembly>();
 		internal HashSet<string> PathsToXmlCommentsFiles { get; } = new HashSet<string>();
 		internal HashSet<string> DocumentNames { get; } = new HashSet<string>();
@@ -334,10 +398,12 @@ namespace SignalRSwaggerGen
 		internal HashSet<IOperationFilter> OperationFilters { get; } = new HashSet<IOperationFilter>();
 		internal HashSet<IParameterFilter> ParameterFilters { get; } = new HashSet<IParameterFilter>();
 		internal HashSet<IRequestBodyFilter> RequestBodyFilters { get; } = new HashSet<IRequestBodyFilter>();
+		internal HashSet<Type> DeclaringTypesOfMethodsToIgnore { get; } = new HashSet<Type>();
 
 		private Func<string, string> _hubPathFunc = hubName => Constants.DefaultHubPathTemplate.Replace(Constants.HubNamePlaceholder, hubName);
 		private AutoDiscover _autoDiscover = Constants.DefaultAutoDiscover;
 		private Operation _operation = Constants.DefaultOperation;
 		private NameTransformer _nameTransformer;
+		private HubMethodsScan _hubMethodsScan;
 	}
 }

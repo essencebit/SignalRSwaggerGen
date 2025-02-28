@@ -10,11 +10,11 @@
 		<PackageTags>swagger openapi open api swashbuckle swaggergen documentation discovery help description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-		<Version>4.7.0</Version>
-		<PackageReleaseNotes>Added support for multiple Authorize attributes on hubs and methods.</PackageReleaseNotes>
-		<AssemblyVersion>4.7.0.0</AssemblyVersion>
+		<Version>4.8.0</Version>
+		<PackageReleaseNotes>Added support for including inherited methods for the hubs.</PackageReleaseNotes>
+		<AssemblyVersion>4.8.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<FileVersion>4.7.0.0</FileVersion>
+		<FileVersion>4.8.0.0</FileVersion>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>Logo.png</PackageIcon>
 		<PackageIconUrl />
@@ -39,7 +39,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SignalRSwaggerGen.Utils" Version="1.0.0" />
+		<PackageReference Include="SignalRSwaggerGen.Utils" Version="1.7.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.0.0" />
 	</ItemGroup>
 

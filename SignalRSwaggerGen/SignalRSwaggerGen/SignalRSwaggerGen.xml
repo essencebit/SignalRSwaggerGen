@@ -197,6 +197,42 @@
             Disable security for all hubs
             </summary>
         </member>
+        <member name="P:SignalRSwaggerGen.SignalRSwaggerGenOptions.HubMethodsScan">
+            <summary>
+            A flag indicating what hub methods must be included in Swagger documentation.
+            Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromType(System.Type)">
+            <summary>
+            Specify the type whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="type">Type to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="type"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Specify the types whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="types">Types to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromTypes(System.Type[])">
+            <summary>
+            Specify the types whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="types">Types to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+        </member>
         <member name="T:Microsoft.Extensions.DependencyInjection.SwaggerGenOptionsExtensions">
             <summary>
             Extensions for SwaggerGenOptions

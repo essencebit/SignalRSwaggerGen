@@ -3,14 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Reflection;
 
-namespace SignalRSwaggerGen.Utils
+namespace SignalRSwaggerGen
 {
-	internal static class ReflectionUtils
+	internal static class BusinessUtils
 	{
-		public const BindingFlags DeclaredPublicInstance = BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance;
-		public const BindingFlags PublicInstanceMethod = BindingFlags.Public | BindingFlags.Instance | BindingFlags.InvokeMethod;
-		public const BindingFlags PublicInstance = BindingFlags.Public | BindingFlags.Instance;
-
 		public static string GetName(this Type type)
 		{
 			return type.FullName ?? type.Name;
