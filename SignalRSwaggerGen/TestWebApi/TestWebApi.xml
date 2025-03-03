@@ -4,15 +4,6 @@
         <name>TestWebApi</name>
     </assembly>
     <members>
-        <member name="M:TestWebApi.Controllers.TestController.Post(TestWebApi.WeatherForecast)">
-            <summary>
-            Summary
-            </summary>
-            <remarks>Remarks</remarks>
-            <example>Example</example>
-            <param name="form"></param>
-            <returns></returns>
-        </member>
         <member name="T:TestWebApi.Hubs.StronglyTypedTestHub">
             <summary>
             xxx

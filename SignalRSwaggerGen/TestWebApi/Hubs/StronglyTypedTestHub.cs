@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,9 +13,10 @@ namespace TestWebApi.Hubs
 	/// <summary>
 	/// xxx
 	/// </summary>
-	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" })]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, documentNames: new[] { "hubs" }, hubMethodsScan: HubMethodsScan.Default)]
 	public class StronglyTypedTestHub : Hub<IStronglyTypedTestHub>
 	{
+		public string Name { get; set; }
 		public async Task TestMethod4()
 		{
 			await Clients.All.TestMethod(default, default, default, default);
@@ -50,10 +52,13 @@ namespace TestWebApi.Hubs
 		public Task<WeatherForecast> TestMethod3(
 			[SignalRParam(paramType: typeof(WeatherForecast))] int agr1,
 			string arg2,
-			[FromBody] WeatherForecast arg3,
+			[FromBody][Required] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken);
 
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3();
+
+		public void TestMethod5([FromBody] int arg1, MyEnum arg2, MyEnum arg3);
+		public MyEnum TestMethod6([FromBody] MyEnum arg1, MyEnum arg2, MyEnum arg3);
 	}
 }

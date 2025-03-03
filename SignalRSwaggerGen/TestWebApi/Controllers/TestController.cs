@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SignalRSwaggerGen.Attributes;
+using SignalRSwaggerGen.Enums;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
@@ -7,40 +9,46 @@ using System.Threading.Tasks;
 
 namespace TestWebApi.Controllers
 {
-	[ApiExplorerSettings(GroupName = "controllers")]
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams, path: "/hubs/Test", tag: "Test")]
+	[ApiExplorerSettings(GroupName = "controllers", IgnoreApi = false)]
 	[ApiController]
 	[Route("[controller]")]
 	public class TestController : ControllerBase
 	{
-		[HttpGet]
-		public IEnumerable<WeatherForecast> Get()
+		[HttpPost("query")]
+		public void query([FromQuery] WeatherForecast query)
+		{
+			return;
+		}
+
+		[HttpPost("get")]
+		public IEnumerable<WeatherForecast> get([FromBody] int arg1, string arg2)
 		{
 			return default;
 		}
 
-		/// <summary>
-		/// Summary
-		/// </summary>
-		/// <remarks>Remarks</remarks>
-		/// <example>Example</example>
-		/// <param name="form"></param>
-		/// <returns></returns>
 		[HttpPost("form")]
-		public WeatherForecast Post([FromForm] WeatherForecast form)
+		public void form([FromForm] WeatherForecast form)
 		{
-			return default;
+			return;
 		}
 
 		[HttpPost("body")]
-		public int Post([FromBody] WeatherForecast body, [FromQuery] string _)
+		public void body([FromBody] WeatherForecast body)
 		{
-			return default;
+			return;
 		}
 
-		[HttpPost("form-file")]
-		public int Post(File formFile)
+		[HttpPost("file")]
+		public void file(IFormFile formFile)
 		{
-			return default;
+			return;
+		}
+
+		[HttpPost("myEnum")]
+		public MyEnum myEnum([FromBody] MyEnum arg1, MyEnum arg2, MyEnum arg3)
+		{
+			return MyEnum.Value1;
 		}
 	}
 

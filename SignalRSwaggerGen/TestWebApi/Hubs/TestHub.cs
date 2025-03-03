@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.SignalR;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Naming;
+using System.ComponentModel.DataAnnotations;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -18,14 +19,15 @@ namespace TestWebApi.Hubs
 		[return: SignalRReturn]
 		[SignalRMethod(summary: "method1 summary", description: "method1 description", autoDiscover: AutoDiscover.Params)]
 		public ValueTask TestMethod(
-			IFormFile formFile,
-			string arg2,
+			[Required] IFormFile formFile,
+			[Required] string arg2,
 			[SignalRParam(description: "arg3 description", deprecated: true)] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken)
 		{
 			return default;
 		}
 
+		[Authorize(AuthenticationSchemes = "Basic, Bearer")]
 		[Authorize(AuthenticationSchemes = "Basic, Bearer")]
 		[return: SignalRReturn(typeof(Task<WeatherForecast>), 200, "Success")]
 		[return: SignalRReturn(returnType: typeof(ValueTask<>), statusCode: 201, description: "Created")]
@@ -43,12 +45,13 @@ namespace TestWebApi.Hubs
 		public Task<WeatherForecast> TestMethod3(
 			int agr1,
 			string arg2,
-			[FromForm] WeatherForecast arg3,
+			[FromForm][Required] WeatherForecast arg3,
 			[SignalRHidden] CancellationToken cancellationToken)
 		{
 			return default;
 		}
 
+		[Authorize]
 		[Authorize]
 		[return: SignalRHidden]
 		public Task<WeatherForecast> TestMethod3()

@@ -1,0 +1,391 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using NSwag;
+using NSwag.Generation.Processors;
+using SignalRSwaggerGen.Enums;
+using SignalRSwaggerGen.Naming;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+
+namespace SignalRSwaggerGen.NSwag
+{
+	/// <summary>
+	/// Options used by SignalRSwaggerGen to generate documentation for SignalR hubs
+	/// </summary>
+	public class SignalRSwaggerGenOptions
+	{
+		/// <summary>
+		/// The func that will receive as input the hub name and will return the path for the hub.
+		/// The func will be disregarded for the hubs that have a not null path specified on <see cref="SignalRSwaggerGen.Attributes.SignalRHubAttribute"/> level.
+		/// If the func not specified explicitly, the default func will return a value based on the template <see cref="Constants.DefaultHubPathTemplate"/>.
+		/// If you decide to set a custom func, make sure the func will return a distinct path for each hub, in order to avoid potential problems.
+		/// </summary>
+		/// <example>hubName => $"hubs/are/here/{hubName}"</example>
+		/// <exception cref="ArgumentNullException">Thrown if the value is null</exception>
+		public Func<string, string> HubPathFunc
+		{
+			get => _hubPathFunc;
+			set
+			{
+				_hubPathFunc = value ?? throw new ArgumentNullException(nameof(HubPathFunc));
+			}
+		}
+
+		/// <summary>
+		/// A flag indicating what components will have Swagger documentation enabled automatically.
+		/// Can be overridden for a specific component by specifying auto-discover value for that component in particular.
+		/// If not specified explicitly, the default value is <see cref="Constants.DefaultAutoDiscover"/>.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+		public AutoDiscover AutoDiscover
+		{
+			get => _autoDiscover;
+			set
+			{
+				if (value == AutoDiscover.Inherit) throw new ArgumentException($"Auto-discover option '{value}' not allowed, since there's no other higher level configuration to inherit from");
+				_autoDiscover = value;
+			}
+		}
+
+		/// <summary>
+		/// Same as HTTP verb. Can be overridden for a specific method by specifying the operation for that method in particular.
+		/// If not specified explicitly, the default value is <see cref="Constants.DefaultOperation"/>.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="Operation.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+		public Operation Operation
+		{
+			get => _operation;
+			set
+			{
+				if (value == Operation.Inherit) throw new ArgumentException($"Operation '{value}' not allowed, since there's no other higher level configuration to inherit from");
+				_operation = value;
+			}
+		}
+
+		/// <summary>
+		/// The name transformer that will be used to transform the name of the hubs and their methods.
+		/// Can be overridden for a specific component by specifying a transformer for that component in particular.
+		/// If not specified at any level, no transformation will happen. The namespace <see cref="SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.
+		/// </summary>
+		/// <exception cref="ArgumentNullException">Thrown if the value is null</exception>
+		public NameTransformer NameTransformer
+		{
+			get => _nameTransformer;
+			set
+			{
+				_nameTransformer = value ?? throw new ArgumentNullException(nameof(NameTransformer));
+			}
+		}
+
+		/// <summary>
+		/// Use summary section from hub's XML comments as tag for Swagger doc
+		/// </summary>
+		public bool UseHubXmlCommentsSummaryAsTag { get; set; }
+
+		/// <summary>
+		/// Use summary section from hub's XML comments as tag description for Swagger doc. Default is true.
+		/// </summary>
+		public bool UseHubXmlCommentsSummaryAsTagDescription { get; set; } = true;
+
+		/// <summary>
+		/// A flag indicating if inherited methods of the hub must be included in Swagger documentation.
+		/// Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+		/// </summary>
+		public bool IncludeInheritedMethods { get; set; }
+
+		/// <summary>
+		/// Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+		/// This method has additive effect. You can use it multiple times to add more assemblies.
+		/// </summary>
+		/// <param name="assembly">Assembly to be scanned for SignalR hubs</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="assembly"/> is null</exception>
+		public void ScanAssembly(Assembly assembly)
+		{
+			if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+			Assemblies.Add(assembly);
+		}
+
+		/// <summary>
+		/// Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+		/// This method has additive effect. You can use it multiple times to add more assemblies.
+		/// </summary>
+		/// <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+		public void ScanAssemblies(IEnumerable<Assembly> assemblies)
+		{
+			if (assemblies == null) throw new ArgumentNullException(nameof(assemblies));
+			if (!assemblies.Any()) throw new ArgumentException("Empty", nameof(assemblies));
+			foreach (var assembly in assemblies)
+			{
+				ScanAssembly(assembly);
+			}
+		}
+
+		/// <summary>
+		/// Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+		/// This method has additive effect. You can use it multiple times to add more assemblies.
+		/// </summary>
+		/// <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+		public void ScanAssemblies(params Assembly[] assemblies)
+		{
+			if (assemblies == null) throw new ArgumentNullException(nameof(assemblies));
+			if (assemblies.Length == 0) throw new ArgumentException("Empty", nameof(assemblies));
+			foreach (var assembly in assemblies)
+			{
+				ScanAssembly(assembly);
+			}
+		}
+
+		/// <summary>
+		/// Specify the name of the Swagger document the hubs will be displayed in.
+		/// Can be overridden for a specific hub by specifying document names for that hub in particular.
+		/// If no document names specified explicitly, then the hubs will be displayed in all documents.
+		/// This method has additive effect. You can use it multiple times to add more document names.
+		/// </summary>
+		/// <param name="documentName">Name of the Swagger document the hubs will be displayed in</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="documentName"/> is null</exception>
+		public void DisplayInDocument(string documentName)
+		{
+			if (documentName == null) throw new ArgumentNullException(nameof(documentName));
+			DocumentNames.Add(documentName);
+		}
+
+		/// <summary>
+		/// Specify the list of names of the Swagger documents the hubs will be displayed in.
+		/// Can be overridden for a specific hub by specifying document names for that hub in particular.
+		/// If no document names specified explicitly, then the hubs will be displayed in all documents.
+		/// This method has additive effect. You can use it multiple times to add more document names.
+		/// </summary>
+		/// <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+		public void DisplayInDocuments(IEnumerable<string> documentNames)
+		{
+			if (documentNames == null) throw new ArgumentNullException(nameof(documentNames));
+			if (!documentNames.Any()) throw new ArgumentException("Empty", nameof(documentNames));
+			foreach (var documentName in documentNames)
+			{
+				DisplayInDocument(documentName);
+			}
+		}
+
+		/// <summary>
+		/// Specify the list of names of the Swagger documents the hubs will be displayed in.
+		/// Can be overridden for a specific hub by specifying document names for that hub in particular.
+		/// If no document names specified explicitly, then the hubs will be displayed in all documents.
+		/// This method has additive effect. You can use it multiple times to add more document names.
+		/// </summary>
+		/// <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+		public void DisplayInDocuments(params string[] documentNames)
+		{
+			if (documentNames == null) throw new ArgumentNullException(nameof(documentNames));
+			if (documentNames.Length == 0) throw new ArgumentException("Empty", nameof(documentNames));
+			foreach (var documentName in documentNames)
+			{
+				DisplayInDocument(documentName);
+			}
+		}
+
+		/// <summary>
+		/// Specify an XML comments file to be used for generating Swagger doc.
+		/// This method has additive effect. You can use it multiple times to add more XML comments files.
+		/// </summary>
+		/// <param name="path">Path to the file that contains XML comments</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="path"/> is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="path"/> does not exist</exception>
+		public void UseXmlComments(string path)
+		{
+			if (path == null) throw new ArgumentNullException(nameof(path));
+			if (!File.Exists(path)) throw new ArgumentException($"Does not exist: path=[{path}]", nameof(path));
+			PathsToXmlCommentsFiles.Add(path);
+		}
+
+		/// <summary>
+		/// Specify a list of XML comments files to be used for generating Swagger doc.
+		/// This method has additive effect. You can use it multiple times to add more XML comments files.
+		/// </summary>
+		/// <param name="paths">Paths to the files that contain XML comments</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+		public void UseXmlComments(IEnumerable<string> paths)
+		{
+			if (paths == null) throw new ArgumentNullException(nameof(paths));
+			if (!paths.Any()) throw new ArgumentException("Empty", nameof(paths));
+			foreach (var path in paths)
+			{
+				UseXmlComments(path);
+			}
+		}
+
+		/// <summary>
+		/// Specify a list of XML comments files to be used for generating Swagger doc.
+		/// This method has additive effect. You can use it multiple times to add more XML comments files.
+		/// </summary>
+		/// <param name="paths">Paths to the files that contain XML comments</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+		public void UseXmlComments(params string[] paths)
+		{
+			if (paths == null) throw new ArgumentNullException(nameof(paths));
+			if (paths.Length == 0) throw new ArgumentException("Empty", nameof(paths));
+			foreach (var path in paths)
+			{
+				UseXmlComments(path);
+			}
+		}
+
+		/// <summary>
+		/// Specify a security requirement to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirement">Security requirement</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirement"/> is null</exception>
+		public void AddSecurityRequirement(OpenApiSecurityRequirement securityRequirement)
+		{
+			if (securityRequirement == null) throw new ArgumentNullException(nameof(securityRequirement));
+			SecurityRequirements.Add(securityRequirement);
+		}
+
+		/// <summary>
+		/// Specify a list of security requirements to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirements">Security requirements</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+		public void AddSecurityRequirements(IEnumerable<OpenApiSecurityRequirement> securityRequirements)
+		{
+			if (securityRequirements == null) throw new ArgumentNullException(nameof(securityRequirements));
+			if (!securityRequirements.Any()) throw new ArgumentException("Empty", nameof(securityRequirements));
+			foreach (var securityRequirement in securityRequirements)
+			{
+				SecurityRequirements.Add(securityRequirement);
+			}
+		}
+
+		/// <summary>
+		/// Specify a list of security requirements to be applied for all hubs.
+		/// Can be overridden for a specific hub/method using <see cref="AllowAnonymousAttribute"/> or <see cref="AuthorizeAttribute.AuthenticationSchemes"/>.
+		/// This method has additive effect. You can use it multiple times to add more security requirements.
+		/// </summary>
+		/// <param name="securityRequirements">Security requirements</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+		public void AddSecurityRequirements(params OpenApiSecurityRequirement[] securityRequirements)
+		{
+			if (securityRequirements == null) throw new ArgumentNullException(nameof(securityRequirements));
+			if (securityRequirements.Length == 0) throw new ArgumentException("Empty", nameof(securityRequirements));
+			foreach (var securityRequirement in securityRequirements)
+			{
+				SecurityRequirements.Add(securityRequirement);
+			}
+		}
+
+		/// <summary>
+		/// Add an operation processor
+		/// </summary>
+		/// <param name="processor">Processor</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="processor"/> is null</exception>
+		public void AddOperationProcessor(IOperationProcessor processor)
+		{
+			if (processor == null) throw new ArgumentNullException(nameof(processor));
+			OperationProcessors.Add(processor);
+		}
+
+		/// <summary>
+		/// Disregard security requirements not added via <see cref="SignalRSwaggerGenOptions"/>
+		/// </summary>
+		public bool DisregardOtherSecurityRequirements { get; set; }
+
+		/// <summary>
+		/// Disable security for all hubs
+		/// </summary>
+		public bool DisableSecurity { get; set; }
+
+		/// <summary>
+		/// A flag indicating what hub methods must be included in Swagger documentation.
+		/// Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+		/// </summary>
+		/// <exception cref="ArgumentException">Thrown if the value is <see cref="AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+		public HubMethodsScan HubMethodsScan
+		{
+			get => _hubMethodsScan;
+			set
+			{
+				if (value == HubMethodsScan.Inherit) throw new ArgumentException($"Hub methods scan option '{value}' not allowed, since there's no other higher level configuration to inherit from");
+				_hubMethodsScan = value;
+			}
+		}
+
+		/// <summary>
+		/// Specify the type whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="type">Type to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="type"/> is null</exception>
+		public void IgnoreMethodsInheritedFromType(Type type)
+		{
+			if (type == null) throw new ArgumentNullException(nameof(type));
+			DeclaringTypesOfMethodsToIgnore.Add(type);
+		}
+
+		/// <summary>
+		/// Specify the types whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="types">Types to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+		public void IgnoreMethodsInheritedFromTypes(IEnumerable<Type> types)
+		{
+			if (types == null) throw new ArgumentNullException(nameof(types));
+			if (!types.Any()) throw new ArgumentException("Empty", nameof(types));
+			foreach (var type in types)
+			{
+				IgnoreMethodsInheritedFromType(type);
+			}
+		}
+
+		/// <summary>
+		/// Specify the types whose methods must be ignored when including inherited methods for the hub type.
+		/// This method has additive effect. You can use it multiple times to add more types.
+		/// </summary>
+		/// <param name="types">Types to ignore when including inherited methods</param>
+		/// <remarks>Has effect only when <see cref="HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+		/// <exception cref="ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+		public void IgnoreMethodsInheritedFromTypes(params Type[] types)
+		{
+			if (types == null) throw new ArgumentNullException(nameof(types));
+			if (types.Length == 0) throw new ArgumentException("Empty", nameof(types));
+			foreach (var type in types)
+			{
+				IgnoreMethodsInheritedFromType(type);
+			}
+		}
+
+		internal HashSet<Assembly> Assemblies { get; } = new HashSet<Assembly>();
+		internal HashSet<string> PathsToXmlCommentsFiles { get; } = new HashSet<string>();
+		internal HashSet<string> DocumentNames { get; } = new HashSet<string>();
+		internal HashSet<OpenApiSecurityRequirement> SecurityRequirements { get; } = new HashSet<OpenApiSecurityRequirement>();
+		internal HashSet<IOperationProcessor> OperationProcessors { get; } = new HashSet<IOperationProcessor>();
+		internal HashSet<Type> DeclaringTypesOfMethodsToIgnore { get; } = new HashSet<Type>();
+
+		private Func<string, string> _hubPathFunc = hubName => Constants.DefaultHubPathTemplate.Replace(Constants.HubNamePlaceholder, hubName);
+		private AutoDiscover _autoDiscover = Constants.DefaultAutoDiscover;
+		private Operation _operation = Constants.DefaultOperation;
+		private NameTransformer _nameTransformer;
+		private HubMethodsScan _hubMethodsScan;
+	}
+}

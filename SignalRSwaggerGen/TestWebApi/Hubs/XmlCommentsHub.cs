@@ -43,8 +43,8 @@ namespace TestWebApi.Hubs
 					/// <param name="arg4">xml commented arg4 description</param>
 					/// <returns>something</returns>
 					public unsafe void MethodX<TA1, TA2>(
-						ref Middle<int, TA1>.Inner.GenericClass<GenericClass<bool, TC1, TA2[]>, TO1, TO2[,]>[,,,][][,,] arg1,
-						Struct.GenericStruct<Struct.GenericStruct<TA1>.IInterface<List<Struct.GenericStruct<TA1>>[,], GenericClass<Outer, Middle<TO2, TO1>, Inner>>.Delegate<object[,,,,][][,,][][][][,,,,][,,,], List<object>[]>>* arg2,
+						[SignalRHidden] ref Middle<int, TA1>.Inner.GenericClass<GenericClass<bool, TC1, TA2[]>, TO1, TO2[,]>[,,,][][,,] arg1,
+						[SignalRHidden] Struct.GenericStruct<Struct.GenericStruct<TA1>.IInterface<List<Struct.GenericStruct<TA1>>[,], GenericClass<Outer, Middle<TO2, TO1>, Inner>>.Delegate<object[,,,,][][,,][][][][,,,,][,,,], List<object>[]>>* arg2,
 						List<List<Dictionary<XmlCommentedHub<Struct.GenericStruct<Struct>, TC1>, ISet<TO2>[,,][][]>>> arg3,
 						List<List<Dictionary<XmlCommentedHub<Struct.GenericStruct<Struct.GenericStruct<Struct>.IInterface<TA2, object>.Delegate<bool, Struct.GenericStruct<TO1[][,,,,,]>.IInterface<string, int?>.Delegate<sbyte, DateTime>[,,,,,,,][][]>>, TC1>, ISet<TO2>[,,][][]>>> arg4)
 					{

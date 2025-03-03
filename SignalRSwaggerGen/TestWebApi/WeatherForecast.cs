@@ -1,4 +1,5 @@
 using System;
+using TestWebApi;
 
 namespace TestWebApi
 {
@@ -17,9 +18,15 @@ namespace TestWebApi
 		private string Private { get; set; }
 
 		public Y.Base BaseY { get; set; }
+
+		public MyEnum EnumField { get; set; }
 	}
 
-	
+	public enum MyEnum
+	{
+		Value1 = 2,
+		Value2 = 3,
+	}
 }
 namespace X
 {
@@ -44,5 +51,7 @@ namespace Y
 		protected string Protected { get; set; }
 
 		public Base Self { get; set; }
+
+		public MyEnum EnumField { get; set; }
 	}
 }

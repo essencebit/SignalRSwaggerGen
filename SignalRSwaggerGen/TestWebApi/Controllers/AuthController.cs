@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using SignalRSwaggerGen.Attributes;
+using SignalRSwaggerGen.Enums;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -9,8 +11,9 @@ using System.Text;
 
 namespace TestWebApi.Controllers
 {
+	[SignalRHub(autoDiscover: AutoDiscover.MethodsAndParams)]
 	[AllowAnonymous]
-	[ApiExplorerSettings(GroupName = "controllers")]
+	[ApiExplorerSettings(GroupName = "controllers", IgnoreApi = false)]
 	[ApiController]
 	[Route("[controller]")]
 	public class LoginController : ControllerBase

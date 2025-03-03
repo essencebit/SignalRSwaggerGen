@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SignalRSwaggerGen.NSwag</name>
+    </assembly>
+    <members>
+        <member name="T:Microsoft.Extensions.DependencyInjection.AspNetCoreOpenApiDocumentGeneratorSettingsExtensions">
+            <summary>
+            Extensions for AspNetCoreOpenApiDocumentGeneratorSettings
+            </summary>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.AspNetCoreOpenApiDocumentGeneratorSettingsExtensions.AddSignalRSwaggerGen(NSwag.Generation.AspNetCore.AspNetCoreOpenApiDocumentGeneratorSettings)">
+            <summary>
+            Add SignalRSwaggerGen to generate documentation for SignalR hubs
+            </summary>
+            <param name="settings">...</param>
+        </member>
+        <member name="M:Microsoft.Extensions.DependencyInjection.AspNetCoreOpenApiDocumentGeneratorSettingsExtensions.AddSignalRSwaggerGen(NSwag.Generation.AspNetCore.AspNetCoreOpenApiDocumentGeneratorSettings,System.Action{SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions})">
+            <summary>
+            Add SignalRSwaggerGen to generate documentation for SignalR hubs
+            </summary>
+            <param name="settings">...</param>
+            <param name="action">Action for setting up options for SignalRSwaggerGen</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="action"/> is null</exception>
+        </member>
+        <member name="T:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions">
+            <summary>
+            Options used by SignalRSwaggerGen to generate documentation for SignalR hubs
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.HubPathFunc">
+            <summary>
+            The func that will receive as input the hub name and will return the path for the hub.
+            The func will be disregarded for the hubs that have a not null path specified on <see cref="!:SignalRSwaggerGen.Attributes.SignalRHubAttribute"/> level.
+            If the func not specified explicitly, the default func will return a value based on the template <see cref="F:SignalRSwaggerGen.Constants.DefaultHubPathTemplate"/>.
+            If you decide to set a custom func, make sure the func will return a distinct path for each hub, in order to avoid potential problems.
+            </summary>
+            <example>hubName => $"hubs/are/here/{hubName}"</example>
+            <exception cref="T:System.ArgumentNullException">Thrown if the value is null</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.AutoDiscover">
+            <summary>
+            A flag indicating what components will have Swagger documentation enabled automatically.
+            Can be overridden for a specific component by specifying auto-discover value for that component in particular.
+            If not specified explicitly, the default value is <see cref="F:SignalRSwaggerGen.Constants.DefaultAutoDiscover"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.Operation">
+            <summary>
+            Same as HTTP verb. Can be overridden for a specific method by specifying the operation for that method in particular.
+            If not specified explicitly, the default value is <see cref="F:SignalRSwaggerGen.Constants.DefaultOperation"/>.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.Operation.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.NameTransformer">
+            <summary>
+            The name transformer that will be used to transform the name of the hubs and their methods.
+            Can be overridden for a specific component by specifying a transformer for that component in particular.
+            If not specified at any level, no transformation will happen. The namespace <see cref="!:SignalRSwaggerGen.Naming"/> already contains some predefined name transformers, so check 'em out.
+            </summary>
+            <exception cref="T:System.ArgumentNullException">Thrown if the value is null</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.UseHubXmlCommentsSummaryAsTag">
+            <summary>
+            Use summary section from hub's XML comments as tag for Swagger doc
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.UseHubXmlCommentsSummaryAsTagDescription">
+            <summary>
+            Use summary section from hub's XML comments as tag description for Swagger doc. Default is true.
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.IncludeInheritedMethods">
+            <summary>
+            A flag indicating if inherited methods of the hub must be included in Swagger documentation.
+            Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+            </summary>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.ScanAssembly(System.Reflection.Assembly)">
+            <summary>
+            Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assembly">Assembly to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assembly"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.ScanAssemblies(System.Collections.Generic.IEnumerable{System.Reflection.Assembly})">
+            <summary>
+            Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.ScanAssemblies(System.Reflection.Assembly[])">
+            <summary>
+            Specify assemblies to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
+            This method has additive effect. You can use it multiple times to add more assemblies.
+            </summary>
+            <param name="assemblies">Assemblies to be scanned for SignalR hubs</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="assemblies"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="assemblies"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.DisplayInDocument(System.String)">
+            <summary>
+            Specify the name of the Swagger document the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentName">Name of the Swagger document the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentName"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.DisplayInDocuments(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specify the list of names of the Swagger documents the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.DisplayInDocuments(System.String[])">
+            <summary>
+            Specify the list of names of the Swagger documents the hubs will be displayed in.
+            Can be overridden for a specific hub by specifying document names for that hub in particular.
+            If no document names specified explicitly, then the hubs will be displayed in all documents.
+            This method has additive effect. You can use it multiple times to add more document names.
+            </summary>
+            <param name="documentNames">Names of the Swagger documents the hubs will be displayed in</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="documentNames"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="documentNames"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.UseXmlComments(System.String)">
+            <summary>
+            Specify an XML comments file to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="path">Path to the file that contains XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="path"/> is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="path"/> does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.UseXmlComments(System.Collections.Generic.IEnumerable{System.String})">
+            <summary>
+            Specify a list of XML comments files to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="paths">Paths to the files that contain XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.UseXmlComments(System.String[])">
+            <summary>
+            Specify a list of XML comments files to be used for generating Swagger doc.
+            This method has additive effect. You can use it multiple times to add more XML comments files.
+            </summary>
+            <param name="paths">Paths to the files that contain XML comments</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="paths"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="paths"/> is empty or any of its items does not exist</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.AddSecurityRequirement(NSwag.OpenApiSecurityRequirement)">
+            <summary>
+            Specify a security requirement to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirement">Security requirement</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirement"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.AddSecurityRequirements(System.Collections.Generic.IEnumerable{NSwag.OpenApiSecurityRequirement})">
+            <summary>
+            Specify a list of security requirements to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirements">Security requirements</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.AddSecurityRequirements(NSwag.OpenApiSecurityRequirement[])">
+            <summary>
+            Specify a list of security requirements to be applied for all hubs.
+            Can be overridden for a specific hub/method using <see cref="T:Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute"/> or <see cref="P:Microsoft.AspNetCore.Authorization.AuthorizeAttribute.AuthenticationSchemes"/>.
+            This method has additive effect. You can use it multiple times to add more security requirements.
+            </summary>
+            <param name="securityRequirements">Security requirements</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="securityRequirements"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="securityRequirements"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.AddOperationProcessor(NSwag.Generation.Processors.IOperationProcessor)">
+            <summary>
+            Add an operation processor
+            </summary>
+            <param name="processor">Processor</param>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="processor"/> is null</exception>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.DisregardOtherSecurityRequirements">
+            <summary>
+            Disregard security requirements not added via <see cref="T:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions"/>
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.DisableSecurity">
+            <summary>
+            Disable security for all hubs
+            </summary>
+        </member>
+        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.HubMethodsScan">
+            <summary>
+            A flag indicating what hub methods must be included in Swagger documentation.
+            Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown if the value is <see cref="F:SignalRSwaggerGen.Enums.AutoDiscover.Inherit"/>, since there's no other higher level configuration to inherit from</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromType(System.Type)">
+            <summary>
+            Specify the type whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="type">Type to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="type"/> is null</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromTypes(System.Collections.Generic.IEnumerable{System.Type})">
+            <summary>
+            Specify the types whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="types">Types to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+        </member>
+        <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.IgnoreMethodsInheritedFromTypes(System.Type[])">
+            <summary>
+            Specify the types whose methods must be ignored when including inherited methods for the hub type.
+            This method has additive effect. You can use it multiple times to add more types.
+            </summary>
+            <param name="types">Types to ignore when including inherited methods</param>
+            <remarks>Has effect only when <see cref="F:SignalRSwaggerGen.Enums.HubMethodsScan.IncludeInherited"/> is applied for the hub</remarks>
+            <exception cref="T:System.ArgumentNullException">Thrown if <paramref name="types"/> or any of its items is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown if <paramref name="types"/> is empty</exception>
+        </member>
+    </members>
+</doc>
