@@ -90,12 +90,6 @@ namespace SignalRSwaggerGen.NSwag
 		public bool UseHubXmlCommentsSummaryAsTagDescription { get; set; } = true;
 
 		/// <summary>
-		/// A flag indicating if inherited methods of the hub must be included in Swagger documentation.
-		/// Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
-		/// </summary>
-		public bool IncludeInheritedMethods { get; set; }
-
-		/// <summary>
 		/// Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.
 		/// This method has additive effect. You can use it multiple times to add more assemblies.
 		/// </summary>

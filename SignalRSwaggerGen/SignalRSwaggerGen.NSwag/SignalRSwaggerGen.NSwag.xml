@@ -71,12 +71,6 @@
             Use summary section from hub's XML comments as tag description for Swagger doc. Default is true.
             </summary>
         </member>
-        <member name="P:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.IncludeInheritedMethods">
-            <summary>
-            A flag indicating if inherited methods of the hub must be included in Swagger documentation.
-            Can be overridden for a specific hub by setting the corresponding parameter for that hub in particular.
-            </summary>
-        </member>
         <member name="M:SignalRSwaggerGen.NSwag.SignalRSwaggerGenOptions.ScanAssembly(System.Reflection.Assembly)">
             <summary>
             Specify the assembly to be scanned for SignalR hubs. If no assemblies specified explicitly, the entry assembly will be scanned by default.

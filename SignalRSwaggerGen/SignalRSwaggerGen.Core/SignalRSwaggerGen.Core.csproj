@@ -11,7 +11,7 @@
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
 		<Version>1.5.0</Version>
-		<PackageReleaseNotes>Added "includeInheritedMethods" parameter for SignalRHubAttribute.</PackageReleaseNotes>
+		<PackageReleaseNotes>Added "hubMethodsScan" parameter for SignalRHubAttribute.</PackageReleaseNotes>
 		<AssemblyVersion>1.5.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<FileVersion>1.5.0.0</FileVersion>
