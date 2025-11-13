@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Utils;
@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -94,15 +95,15 @@ namespace SignalRSwaggerGen
 				methodPath,
 				new OpenApiPathItem
 				{
-					Operations = new Dictionary<OperationType, OpenApiOperation>
+					Operations = new Dictionary<HttpMethod, OpenApiOperation>
 					{
 						{
-							(OperationType)operation,
+							new HttpMethod(operation.ToString()),
 							new OpenApiOperation
 							{
 								Summary = summary,
 								Description = description,
-								Tags = new List<OpenApiTag> { new OpenApiTag { Name = tag } },
+								Tags = new HashSet<OpenApiTagReference> { new(tag) },
 								Parameters = ToOpenApiParameters(context, hubAttribute, methodParams, methodXml).ToList(),
 								Responses = ToOpenApiResponses(context, methodReturnParam),
 								RequestBody =  GetOpenApiRequestBody(context, method),
@@ -125,23 +126,13 @@ namespace SignalRSwaggerGen
 				{
 					new OpenApiSecurityRequirement
 					{
-						{
-							new OpenApiSecurityScheme
-							{
-								Reference = new OpenApiReference
-								{
-									Type = ReferenceType.SecurityScheme,
-									Id = "basic",
-								}
-							},
-							Array.Empty<string>()
-						}
+						[new OpenApiSecuritySchemeReference("basic", null)] = []
 					}
 				}
 				: null;
 		}
 
-		private static IEnumerable<OpenApiParameter> ToOpenApiParameters(
+		private static IEnumerable<IOpenApiParameter> ToOpenApiParameters(
 			DocumentFilterContext context,
 			SignalRHubAttribute hubAttribute,
 			IEnumerable<ParameterInfo> parameters,
@@ -202,22 +193,14 @@ namespace SignalRSwaggerGen
 			};
 		}
 
-		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
+		private static IOpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
 		{
-			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema))
+			if (context.SchemaRepository.TryLookupByType(type, out var schemaReference))
 			{
-				schema = context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+				return schemaReference;
 			}
-			return schema.Reference == null
-				? schema
-				: new OpenApiSchema
-				{
-					Reference = new OpenApiReference
-					{
-						Id = schema.Reference.Id,
-						Type = ReferenceType.Schema
-					}
-				};
+
+			return context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
 		}
 
 		private static Dictionary<string, OpenApiMediaType> GetContentByMediaType(OpenApiMediaType mediaType)

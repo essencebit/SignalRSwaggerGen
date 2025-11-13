@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 
 namespace TestWebApi
 {
@@ -36,7 +36,11 @@ namespace TestWebApi
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
-				app.UseSwagger();
+				app.UseSwagger(options =>
+				{
+					options.OpenApiVersion = OpenApiSpecVersion.OpenApi3_1;
+				});
+
 				app.UseSwaggerUI(options =>
 				{
 					options.SwaggerEndpoint("/swagger/controllers/swagger.json", "REST API");
