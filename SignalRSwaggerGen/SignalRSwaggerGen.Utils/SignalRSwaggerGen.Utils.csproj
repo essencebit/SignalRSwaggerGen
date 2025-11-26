@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
 		<SignAssembly>True</SignAssembly>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<Authors>Dorin Mocan</Authors>
@@ -10,11 +10,11 @@
 		<PackageTags>swagger openapi open api nswag swashbuckle swaggergen documentation discovery help description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-		<Version>1.7.0</Version>
-		<PackageReleaseNotes></PackageReleaseNotes>
-		<AssemblyVersion>1.7.0.0</AssemblyVersion>
+		<Version>1.8.0</Version>
+		<PackageReleaseNotes>Added support for .NET 8, 9, 10.</PackageReleaseNotes>
+		<AssemblyVersion>1.8.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<FileVersion>1.7.0.0</FileVersion>
+		<FileVersion>1.8.0.0</FileVersion>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>Logo.png</PackageIcon>
 		<PackageIconUrl />
@@ -39,6 +39,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="SignalRSwaggerGen.Core" Version="1.5.0" />
+	  <PackageReference Include="SignalRSwaggerGen.Core" Version="1.6.0" />
 	</ItemGroup>
 </Project>

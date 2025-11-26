@@ -1,7 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+#if NET10_0
+using Microsoft.OpenApi;
+#else
 using Microsoft.OpenApi.Models;
+#endif
 using SignalRSwaggerGen.Attributes;
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Utils;
@@ -13,6 +17,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -58,6 +63,9 @@ namespace SignalRSwaggerGen
 			var methods = GetHubMethods(hub, hubAttribute);
 			var methodAttributes = methods.ToDictionary(x => x, x => x.GetCustomAttribute<SignalRMethodAttribute>());
 			var methodNames = methods.ToDictionary(x => x, x => GetMethodName(x, hubAttribute, methodAttributes[x]));
+#if NET10_0
+			swaggerDoc.Tags ??= new HashSet<OpenApiTag>();
+#endif
 			swaggerDoc.Tags.Add(new OpenApiTag { Name = hubTag, Description = hubDescription });
 			foreach (var method in methods.OrderBy(x => methodNames[x]))
 			{
@@ -136,8 +144,8 @@ namespace SignalRSwaggerGen
 				Summary = summary,
 				Description = description,
 				Tags = ToOpenApiTags(tag),
-				Parameters = ToOpenApiParameters(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
-				RequestBody = GetOpenApiRequestBody(context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
+				Parameters = ToOpenApiParameters(swaggerDoc, context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
+				RequestBody = GetOpenApiRequestBody(swaggerDoc, context, hubAttribute, tag, methodPath, operationType, summary, description, methodParams, methodXml),
 				Responses = ToOpenApiResponses(context, methodReturnParam),
 				Security = GetOpenApiSecurityRequirements(hub, method),
 				Deprecated = MethodIsDeprecated(hub, hubAttribute, method, methodAttribute),
@@ -146,6 +154,15 @@ namespace SignalRSwaggerGen
 				methodPath,
 				new OpenApiPathItem
 				{
+#if NET10_0
+					Operations = new Dictionary<HttpMethod, OpenApiOperation>
+					{
+						{
+							ToHttpMethod(operationType),
+							operation
+						}
+					}
+#else
 					Operations = new Dictionary<OperationType, OpenApiOperation>
 					{
 						{
@@ -153,15 +170,23 @@ namespace SignalRSwaggerGen
 							operation
 						}
 					}
+#endif
 				});
 			var apiDescription = GetMethodApiDescription(tag, methodPath, operationType, summary, description);
-			ApplyOperationFilters(operation, context, method, apiDescription);
+			ApplyOperationFilters(operation, swaggerDoc, context, method, apiDescription);
 		}
 
+#if NET10_0
+		private static HashSet<OpenApiTagReference> ToOpenApiTags(string tag)
+		{
+			return new HashSet<OpenApiTagReference> { new OpenApiTagReference(tag) };
+		}
+#else
 		private static List<OpenApiTag> ToOpenApiTags(string tag)
 		{
 			return new List<OpenApiTag> { new OpenApiTag { Name = tag } };
 		}
+#endif
 
 		private List<OpenApiSecurityRequirement> GetOpenApiSecurityRequirements(Type hub, MethodInfo method)
 		{
@@ -180,6 +205,9 @@ namespace SignalRSwaggerGen
 					?? Enumerable.Empty<string>())
 				.Select(x => x.Trim())
 				.Distinct()
+#if NET10_0
+				.Select(x => new OpenApiSecuritySchemeReference(x))
+#else
 				.Select(x => new OpenApiSecurityScheme
 				{
 					Reference = new OpenApiReference
@@ -188,6 +216,7 @@ namespace SignalRSwaggerGen
 						Id = x,
 					},
 				})
+#endif
 				.ToList();
 
 			if (securitySchemes.Count == 0)
@@ -200,13 +229,22 @@ namespace SignalRSwaggerGen
 			var securityRequirement = new OpenApiSecurityRequirement();
 			foreach (var securityScheme in securitySchemes)
 			{
+#if NET10_0
+				securityRequirement.Add(securityScheme, []);
+#else
 				securityRequirement.Add(securityScheme, Array.Empty<string>());
+#endif
 			}
 
 			return new List<OpenApiSecurityRequirement> { securityRequirement };
 		}
 
+#if NET10_0
+		private List<IOpenApiParameter> ToOpenApiParameters(
+#else
 		private List<OpenApiParameter> ToOpenApiParameters(
+#endif
+			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			SignalRHubAttribute hubAttribute,
 			string tag,
@@ -240,13 +278,18 @@ namespace SignalRSwaggerGen
 						Required = isRequired,
 					};
 					var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
-					ApplyParameterFilters(parameter, context, param, apiDescription);
+					ApplyParameterFilters(parameter, swaggerDoc, context, param, apiDescription);
+#if NET10_0
+					return (IOpenApiParameter)parameter;
+#else
 					return parameter;
+#endif
 				})
 				.ToList();
 		}
 
 		private OpenApiRequestBody GetOpenApiRequestBody(
+			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			SignalRHubAttribute hubAttribute,
 			string tag,
@@ -283,7 +326,7 @@ namespace SignalRSwaggerGen
 			};
 
 			var apiDescription = GetParameterApiDescription(tag, methodPath, operationType, methodSummary, methodDescription, param, paramType, paramDescription);
-			ApplyRequestBodyFilters(requestBody, context, apiDescription);
+			ApplyRequestBodyFilters(requestBody, swaggerDoc, context, apiDescription);
 
 			return requestBody;
 		}
@@ -325,6 +368,37 @@ namespace SignalRSwaggerGen
 				|| (methodAttribute?.Deprecated ?? false);
 		}
 
+#if NET10_0
+		private static IOpenApiSchema GetRequestBodyOpenApiSchema(
+			DocumentFilterContext context,
+			ParameterInfo param,
+			Type paramType,
+			bool isFromForm,
+			bool isFormFile)
+		{
+			return isFromForm
+				? new OpenApiSchema
+				{
+					Type = JsonSchemaType.Object,
+					Properties = paramType
+						.GetProperties(ReflectionUtils.PublicInstance)
+						.ToDictionary(x => x.Name, x => GetOpenApiSchema(context, x.PropertyType))
+				}
+				: isFormFile
+					? new OpenApiSchema
+					{
+						Type = JsonSchemaType.Object,
+						Properties = new Dictionary<string, IOpenApiSchema>
+						{
+							{
+								param.Name,
+								GetOpenApiSchema(context, paramType)
+							}
+						}
+					}
+					: GetOpenApiSchema(context, paramType);
+		}
+#else
 		private static OpenApiSchema GetRequestBodyOpenApiSchema(
 			DocumentFilterContext context,
 			ParameterInfo param,
@@ -354,7 +428,20 @@ namespace SignalRSwaggerGen
 					}
 					: GetOpenApiSchema(context, paramType);
 		}
+#endif
 
+#if NET10_0
+		private static IOpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
+		{
+			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchemaReference schema))
+			{
+				return context.SchemaGenerator.GenerateSchema(type, context.SchemaRepository);
+			}
+			return schema.Reference == null
+				? schema
+				: new OpenApiSchemaReference(schema.Reference.Id);
+		}
+#else
 		private static OpenApiSchema GetOpenApiSchema(DocumentFilterContext context, Type type)
 		{
 			if (!context.SchemaRepository.TryLookupByType(type, out OpenApiSchema schema))
@@ -379,9 +466,14 @@ namespace SignalRSwaggerGen
 					}
 				};
 		}
+#endif
 
 		private static OpenApiMediaType GetOpenApiMediaType(
+#if NET10_0
+			IOpenApiSchema schema,
+#else
 			OpenApiSchema schema,
+#endif
 			ParameterInfo param,
 			bool isFromForm,
 			bool isFormFile)
@@ -500,6 +592,24 @@ namespace SignalRSwaggerGen
 			if (operationType == Operation.Inherit) operationType = _options.Operation;
 			return operationType;
 		}
+
+#if NET10_0
+		private static HttpMethod ToHttpMethod(Operation operationType)
+		{
+			return operationType switch
+			{
+				Operation.Get => HttpMethod.Get,
+				Operation.Put => HttpMethod.Put,
+				Operation.Post => HttpMethod.Post,
+				Operation.Delete => HttpMethod.Delete,
+				Operation.Options => HttpMethod.Options,
+				Operation.Head => HttpMethod.Head,
+				Operation.Patch => HttpMethod.Patch,
+				Operation.Trace => HttpMethod.Trace,
+				_ => throw new NotSupportedException($"Operation type '{operationType}' not supported"),
+			};
+		}
+#endif
 
 		private IEnumerable<Type> GetHubs()
 		{
@@ -740,12 +850,23 @@ namespace SignalRSwaggerGen
 
 		private void ApplyOperationFilters(
 			OpenApiOperation operation,
+			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			MethodInfo method,
 			ApiDescription apiDescription)
 		{
 			foreach (var filter in _options.OperationFilters)
 			{
+#if NET10_0
+				filter.Apply(
+					operation,
+					new OperationFilterContext(
+						apiDescription,
+						context.SchemaGenerator,
+						context.SchemaRepository,
+						swaggerDoc,
+						method));
+#else
 				filter.Apply(
 					operation,
 					new OperationFilterContext(
@@ -753,17 +874,29 @@ namespace SignalRSwaggerGen
 						context.SchemaGenerator,
 						context.SchemaRepository,
 						method));
+#endif
 			}
 		}
 
 		private void ApplyParameterFilters(
 			OpenApiParameter parameter,
+			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			ParameterInfo param,
 			ApiParameterDescription apiParameterDescription)
 		{
 			foreach (var filter in _options.ParameterFilters)
 			{
+#if NET10_0
+				filter.Apply(
+					parameter,
+					new ParameterFilterContext(
+						apiParameterDescription,
+						context.SchemaGenerator,
+						context.SchemaRepository,
+						swaggerDoc,
+						parameterInfo: param));
+#else
 				filter.Apply(
 					parameter,
 					new ParameterFilterContext(
@@ -771,16 +904,28 @@ namespace SignalRSwaggerGen
 						context.SchemaGenerator,
 						context.SchemaRepository,
 						parameterInfo: param));
+#endif
 			}
 		}
 
 		private void ApplyRequestBodyFilters(
 			OpenApiRequestBody requestBody,
+			OpenApiDocument swaggerDoc,
 			DocumentFilterContext context,
 			ApiParameterDescription apiParameterDescription)
 		{
 			foreach (var filter in _options.RequestBodyFilters)
 			{
+#if NET10_0
+				filter.Apply(
+					requestBody,
+					new RequestBodyFilterContext(
+						apiParameterDescription,
+						null,
+						context.SchemaGenerator,
+						context.SchemaRepository,
+						swaggerDoc));
+#else
 				filter.Apply(
 					requestBody,
 					new RequestBodyFilterContext(
@@ -788,6 +933,7 @@ namespace SignalRSwaggerGen
 						null,
 						context.SchemaGenerator,
 						context.SchemaRepository));
+#endif
 			}
 		}
 	}

@@ -85,7 +85,7 @@ namespace SignalRSwaggerGen.Utils.XmlComments
 
 		private static string GetGenericParameterParamTypeName(Type paramType)
 		{
-#if NETSTANDARD2_1
+#if NETSTANDARD2_1 || NET8_0 || NET9_0 || NET10_0
 			if (paramType.IsGenericMethodParameter) return $"``{paramType.GenericParameterPosition}";
 			if (paramType.IsGenericTypeParameter) return $"`{paramType.GenericParameterPosition}";
 			throw new NotSupportedException($"Type [{paramType.AssemblyQualifiedName}] not supported");

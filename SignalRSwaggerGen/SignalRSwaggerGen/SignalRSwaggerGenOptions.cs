@@ -1,5 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+#if NET10_0
+using Microsoft.OpenApi;
+#else
 using Microsoft.OpenApi.Models;
+#endif
 using SignalRSwaggerGen.Enums;
 using SignalRSwaggerGen.Naming;
 using Swashbuckle.AspNetCore.SwaggerGen;

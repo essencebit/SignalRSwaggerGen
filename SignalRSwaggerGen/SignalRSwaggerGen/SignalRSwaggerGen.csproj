@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
+		<TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net9.0;net10.0</TargetFrameworks>
 		<SignAssembly>True</SignAssembly>
 		<EnableNETAnalyzers>true</EnableNETAnalyzers>
 		<Authors>Dorin Mocan</Authors>
@@ -10,11 +10,11 @@
 		<PackageTags>swagger openapi open api swashbuckle swaggergen documentation discovery help description signalr hub websocket wss rest api web socket http doc generation extension handler handle intercept plugin auto standard net core microsoft web socket schema ui gen extension display tag ui interface security presentation essencebit moldova</PackageTags>
 		<PackageProjectUrl>https://github.com/essencebit/SignalRSwaggerGen/wiki</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/essencebit/SignalRSwaggerGen</RepositoryUrl>
-		<Version>4.8.0</Version>
-		<PackageReleaseNotes>Added support for including inherited methods for the hubs.</PackageReleaseNotes>
-		<AssemblyVersion>4.8.0.0</AssemblyVersion>
+		<Version>4.9.0</Version>
+		<PackageReleaseNotes>Added support for .NET 8, 9, 10.</PackageReleaseNotes>
+		<AssemblyVersion>4.9.0.0</AssemblyVersion>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<FileVersion>4.8.0.0</FileVersion>
+		<FileVersion>4.9.0.0</FileVersion>
 		<PackageLicenseFile>LICENSE.md</PackageLicenseFile>
 		<PackageIcon>Logo.png</PackageIcon>
 		<PackageIconUrl />
@@ -36,9 +36,20 @@
 		<None Include="..\.editorconfig" Link=".editorconfig" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="SignalRSwaggerGen.Utils" Version="1.7.0" />
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' Or '$(TargetFramework)' == 'netstandard2.1'">
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net8.0'">
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.6.1" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="9.0.0" />
+	</ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net10.0'">
+		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="10.0.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="SignalRSwaggerGen.Utils" Version="1.8.0" />
 	</ItemGroup>
 
 </Project>
